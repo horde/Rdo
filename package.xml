@@ -43,8 +43,8 @@
        <file name="users.pgsql.sql" role="doc" />
        <file name="users.sqlite.sql" role="doc" />
       </dir> <!-- /doc/Horde/Rdo/examples -->
-      <file name="TODO" role="doc" />
-      <file name="UPGRADING" role="doc" />
+      <file name="TODO.rst" role="doc" />
+      <file name="UPGRADING.rst" role="doc" />
      </dir> <!-- /doc/Horde/Rdo -->
     </dir> <!-- /doc/Horde -->
    </dir> <!-- /doc -->
@@ -157,8 +157,8 @@
    <install as="examples/users.mysql.sql" name="doc/Horde/Rdo/examples/users.mysql.sql" />
    <install as="examples/users.pgsql.sql" name="doc/Horde/Rdo/examples/users.pgsql.sql" />
    <install as="examples/users.sqlite.sql" name="doc/Horde/Rdo/examples/users.sqlite.sql" />
-   <install as="TODO" name="doc/Horde/Rdo/TODO" />
-   <install as="UPGRADING" name="doc/Horde/Rdo/UPGRADING" />
+   <install as="TODO.rst" name="doc/Horde/Rdo/TODO.rst" />
+   <install as="UPGRADING.rst" name="doc/Horde/Rdo/UPGRADING.rst" />
    <install as="Horde/Rdo.php" name="lib/Horde/Rdo.php" />
    <install as="Horde/Rdo/Base.php" name="lib/Horde/Rdo/Base.php" />
    <install as="Horde/Rdo/Exception.php" name="lib/Horde/Rdo/Exception.php" />
