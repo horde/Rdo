@@ -22,7 +22,6 @@
  </stability>
  <license uri="http://www.horde.org/licenses/lgpl21">LGPL-2.1</license>
  <notes>
-* 
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
@@ -201,7 +200,7 @@
    <date>2008-03-15</date>
    <license uri="http://www.horde.org/licenses/lgpl21">LGPL-2.1</license>
    <notes>
-Major improvements including inflection, eager or lazy loading of relationships and fields, and more.
+* Major improvements including inflection, eager or lazy loading of relationships and fields, and more.
    </notes>
   </release>
   <release>
@@ -430,7 +429,6 @@ Major improvements including inflection, eager or lazy loading of relationships 
    <date>2017-10-20</date>
    <license uri="http://www.horde.org/licenses/lgpl21">LGPL-2.1</license>
    <notes>
-* 
    </notes>
   </release>
  </changelog>
