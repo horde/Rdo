@@ -203,7 +203,7 @@
    <date>2008-03-15</date>
    <license uri="http://www.horde.org/licenses/lgpl21">LGPL-2.1</license>
    <notes>
-Major improvements including inflection, eager or lazy loading of relationships and fields, and more.
+* Major improvements including inflection, eager or lazy loading of relationships and fields, and more.
    </notes>
   </release>
   <release>
