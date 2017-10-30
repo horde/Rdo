@@ -1,0 +1,126 @@
+----------
+v2.1.1-git
+----------
+
+
+------
+v2.1.0
+------
+
+[jan] Add Horde_Rdo_Base#toArray() (Neal Thomas Oakey <oakey@b1-systems.de>).
+[jan] Make the JOIN type settable by mapper relationships (Neal Thomas Oakey
+      <oakey@b1-systems.de>).
+
+
+------
+v2.0.5
+------
+
+[jan] Mark PHP 7 as supported.
+
+
+------
+v2.0.4
+------
+
+[jan] Fix issues with certain locales like Turkish.
+
+
+------
+v2.0.3
+------
+
+[jan] Add Composer definition.
+
+
+------
+v2.0.2
+------
+
+[jan] Improve unit tests.
+
+
+------
+v2.0.1
+------
+
+[mms] Use new Horde_Test layout.
+
+
+------
+v2.0.0
+------
+
+First stable release for Horde 5.
+
+
+-----------
+v2.0.0beta1
+-----------
+
+First beta release for Horde 5.
+
+
+------------
+v2.0.0alpha1
+------------
+
+First alpha release for Horde 5.
+
+
+------
+v1.2.0
+------
+
+[jan] Implement ArrayAccess in Horde_Rdo_Base.
+[jan] Fix Horde_Rdo_Exception not extending Horde_Exception.
+
+
+------
+v1.1.1
+------
+
+[rla] Fix issue with retrieving lazy fields (Bug #11012).
+
+
+------
+v1.1.0
+------
+
+[jan] Add Horde_Rdo_Query#distinct() (Request #10535).
+
+
+------
+v1.0.1
+------
+
+[jan] Add missing dependency on Horde_Db.
+
+
+------
+v1.0.0
+------
+
+First stable release for Horde 4.
+
+
+---------
+v1.0.0RC2
+---------
+
+Second release candidate for Horde 4.
+
+
+---------
+v1.0.0RC1
+---------
+
+First release candidate for Horde 4.
+
+
+------
+v0.3.0
+------
+
+Major improvements including inflection, eager or lazy loading of relationships
+      and fields, and more.
