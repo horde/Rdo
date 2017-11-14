@@ -3,15 +3,15 @@
  <name>Horde_Rdo</name>
  <channel>pear.horde.org</channel>
  <extends>Rdo</extends>
- <summary>Rampage Data Objects</summary>
- <description>Lightweight ORM layer</description>
+ <summary>ORM (object relational-mapping) library</summary>
+ <description>Rampage Data Objects. Lightweight ORM layer</description>
  <lead>
   <name>Chuck Hagenbuch</name>
   <user>chuck</user>
   <email>chuck@horde.org</email>
-  <active>yes</active>
+  <active>no</active>
  </lead>
- <date>2017-10-30</date>
+ <date>2017-11-14</date>
  <version>
   <release>2.1.1</release>
   <api>1.3.0</api>
@@ -431,7 +431,7 @@
    <stability>
     <release>stable</release>
     <api>stable</api></stability>
-   <date>2017-10-30</date>
+   <date>2017-11-14</date>
    <license uri="http://www.horde.org/licenses/lgpl21">LGPL-2.1</license>
    <notes>
 * 
