@@ -95,7 +95,6 @@
       <file name="AllTests.php" role="test" />
       <file name="Autoload.php" role="test" />
       <file name="bootstrap.php" role="test" />
-      <file name="phpunit.xml" role="test" />
       <file name="QueryTest.php" role="test" />
      </dir> <!-- /test/Horde/Rdo -->
     </dir> <!-- /test/Horde -->
@@ -174,7 +173,6 @@
    <install as="Horde/Rdo/AllTests.php" name="test/Horde/Rdo/AllTests.php" />
    <install as="Horde/Rdo/Autoload.php" name="test/Horde/Rdo/Autoload.php" />
    <install as="Horde/Rdo/bootstrap.php" name="test/Horde/Rdo/bootstrap.php" />
-   <install as="Horde/Rdo/phpunit.xml" name="test/Horde/Rdo/phpunit.xml" />
    <install as="Horde/Rdo/QueryTest.php" name="test/Horde/Rdo/QueryTest.php" />
    <install as="Horde/Rdo/fixtures/unit_tests.sql" name="test/Horde/Rdo/fixtures/unit_tests.sql" />
    <install as="Horde/Rdo/Objects/ManyToManyA.php" name="test/Horde/Rdo/Objects/ManyToManyA.php" />
