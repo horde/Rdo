@@ -2,7 +2,7 @@
 id: Rdo
 name: Rdo
 full: ORM (object relational-mapping) library
-description: Rampage Data Objects. Lightweight ORM layer
+description: Rampage Data Objects. Lightweight ORM library.
 list: dev
 type: library
 homepage: https://www.horde.org/libraries/Horde_Rdo
