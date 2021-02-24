@@ -4,21 +4,21 @@
  <channel>pear.horde.org</channel>
  <extends>Rdo</extends>
  <summary>ORM (object relational-mapping) library</summary>
- <description>Rampage Data Objects. Lightweight ORM layer</description>
+ <description>Rampage Data Objects. Lightweight ORM library.</description>
  <lead>
   <name>Chuck Hagenbuch</name>
   <user>chuck</user>
   <email>chuck@horde.org</email>
-  <active>yes</active>
+  <active>no</active>
  </lead>
- <date>2017-11-11</date>
+ <date>2021-02-24</date>
  <version>
-  <release>2.1.1</release>
-  <api>1.3.0</api>
+  <release>3.0.0alpha1</release>
+  <api>3.0.0alpha1</api>
  </version>
  <stability>
-  <release>stable</release>
-  <api>stable</api>
+  <release>alpha</release>
+  <api>alpha</api>
  </stability>
  <license uri="http://www.horde.org/licenses/lgpl21">LGPL-2.1</license>
  <notes>
@@ -66,6 +66,26 @@
      <file name="Rdo.php" role="php" />
     </dir> <!-- /lib/Horde -->
    </dir> <!-- /lib -->
+   <dir name="src">
+    <dir name="Mapper">
+     <file name="Sql.php" role="php" />
+    </dir> <!-- /src/Mapper -->
+    <dir name="Query">
+     <file name="Literal.php" role="php" />
+    </dir> <!-- /src/Query -->
+    <file name="Constants.php" role="php" />
+    <file name="DefaultIterator.php" role="php" />
+    <file name="DefaultList.php" role="php" />
+    <file name="Entity.php" role="php" />
+    <file name="EntityObject.php" role="php" />
+    <file name="Mapper.php" role="php" />
+    <file name="MutableList.php" role="php" />
+    <file name="Query.php" role="php" />
+    <file name="Rampage.php" role="php" />
+    <file name="RampageList.php" role="php" />
+    <file name="RampageObject.php" role="php" />
+    <file name="RdoException.php" role="php" />
+   </dir> <!-- /src -->
    <dir name="test">
     <dir name="Horde">
      <dir name="Rdo">
@@ -170,6 +190,20 @@
    <install as="Horde/Rdo/Query.php" name="lib/Horde/Rdo/Query.php" />
    <install as="Horde/Rdo/Query/Literal.php" name="lib/Horde/Rdo/Query/Literal.php" />
    <install as="LICENSE" name="LICENSE" />
+   <install as="Constants.php" name="src/Constants.php" />
+   <install as="DefaultIterator.php" name="src/DefaultIterator.php" />
+   <install as="DefaultList.php" name="src/DefaultList.php" />
+   <install as="Entity.php" name="src/Entity.php" />
+   <install as="EntityObject.php" name="src/EntityObject.php" />
+   <install as="Mapper.php" name="src/Mapper.php" />
+   <install as="Mapper/Sql.php" name="src/Mapper/Sql.php" />
+   <install as="MutableList.php" name="src/MutableList.php" />
+   <install as="Query.php" name="src/Query.php" />
+   <install as="Query/Literal.php" name="src/Query/Literal.php" />
+   <install as="Rampage.php" name="src/Rampage.php" />
+   <install as="RampageList.php" name="src/RampageList.php" />
+   <install as="RampageObject.php" name="src/RampageObject.php" />
+   <install as="RdoException.php" name="src/RdoException.php" />
    <install as="Horde/Rdo/AllTests.php" name="test/Horde/Rdo/AllTests.php" />
    <install as="Horde/Rdo/Autoload.php" name="test/Horde/Rdo/Autoload.php" />
    <install as="Horde/Rdo/bootstrap.php" name="test/Horde/Rdo/bootstrap.php" />
@@ -424,12 +458,12 @@
   </release>
   <release>
    <version>
-    <release>2.1.1</release>
-    <api>1.3.0</api></version>
+    <release>3.0.0alpha1</release>
+    <api>3.0.0alpha1</api></version>
    <stability>
-    <release>stable</release>
-    <api>stable</api></stability>
-   <date>2017-11-11</date>
+    <release>alpha</release>
+    <api>alpha</api></stability>
+   <date>2021-02-24</date>
    <license uri="http://www.horde.org/licenses/lgpl21">LGPL-2.1</license>
    <notes>
 * 
