@@ -1,5 +1,8 @@
 <?php
 
-class Horde_Rdo_Test_Objects_SomeLazyBaseObject extends Horde_Rdo_Base
+namespace Horde\Rdo\Objects;
+use Horde_Rdo_Base;
+
+class SomeLazyBaseObject extends Horde_Rdo_Base
 {
 }

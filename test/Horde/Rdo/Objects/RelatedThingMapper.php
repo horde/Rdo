@@ -1,5 +1,9 @@
 <?php
-class Horde_Rdo_Test_Objects_RelatedThingMapper extends Horde_Rdo_Mapper
+
+namespace Horde\Rdo\Objects;
+use Horde_Rdo_Mapper;
+
+class RelatedThingMapper extends Horde_Rdo_Mapper
 {
     /**
      * Inflector doesn't support Horde-style tables yet

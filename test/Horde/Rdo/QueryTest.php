@@ -8,21 +8,30 @@
  * @subpackage UnitTests
  * @license    http://www.horde.org/licenses/lgpl21 LGPL 2.1
  */
-class Horde_Rdo_QueryTest extends Horde_Test_Case
+namespace Horde\Rdo;
+use Horde_Test_Case as TestCase;
+use \Horde_Test_Factory_Db;
+use \Horde_Rdo_Test_Objects_SimpleMapper;
+use \Horde_Db_Migration_Base;
+use \Horde_Rdo_Query;
+
+class QueryTest extends TestCase
 {
     protected $db;
     protected $mapper;
 
-    public function setUp()
+    public function setUp(): void
     {
         $factory_db = new Horde_Test_Factory_Db();
         $this->db = $factory_db->create();
         $this->mapper = new Horde_Rdo_Test_Objects_SimpleMapper($this->db);
         $migration = new Horde_Db_Migration_Base($this->db);
-        try {
+        
+        $currentTables = $migration->tables();
+        if (in_array('horde_rdo_test', $currentTables)) {
             $migration->dropTable('horde_rdo_test');
-        } catch (Horde_Db_Exception $e) {
         }
+
         $t = $migration->createTable(
             'horde_rdo_test', array('autoincrementKey' => 'id')
         );

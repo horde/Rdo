@@ -1,5 +1,10 @@
 <?php
-class Horde_Rdo_Test_Objects_ManyToManyAMapper extends Horde_Rdo_Mapper
+
+namespace Horde\Rdo\Objects;
+use Horde_Rdo_Mapper;
+use Horde_Rdo;
+
+class ManyToManyAMapper extends Horde_Rdo_Mapper
 {
     /**
      * Inflector doesn't support Horde-style tables yet
@@ -9,5 +14,5 @@ class Horde_Rdo_Test_Objects_ManyToManyAMapper extends Horde_Rdo_Mapper
         'manybs' => array(
             'type' => Horde_Rdo::MANY_TO_MANY,
             'through' => 'test_manythrough',
-            'mapper' => 'Horde_Rdo_Test_Objects_ManyToManyBMapper'));
+            'mapper' => 'Horde\Rdo\Objects\ManyToManyBMapper'));
 }

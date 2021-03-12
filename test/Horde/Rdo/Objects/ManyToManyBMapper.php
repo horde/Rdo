@@ -1,5 +1,10 @@
 <?php
-class Horde_Rdo_Test_Objects_ManyToManyBMapper extends Horde_Rdo_Mapper
+
+namespace Horde\Rdo\Objects;
+use Horde_Rdo_Mapper;
+use Horde_Rdo;
+
+class ManyToManyBMapper extends Horde_Rdo_Mapper
 {
     /**
      * Inflector doesn't support Horde-style tables yet

@@ -1,5 +1,10 @@
 <?php
-class Horde_Rdo_Test_Objects_SomeEagerBaseObjectMapper extends Horde_Rdo_Mapper
+
+namespace Horde\Rdo\Objects;
+use Horde_Rdo_Mapper;
+use Horde_Rdo;
+
+class SomeEagerBaseObjectMapper extends Horde_Rdo_Mapper
 {
     /**
      * Inflector doesn't support Horde-style tables yet
@@ -8,6 +13,6 @@ class Horde_Rdo_Test_Objects_SomeEagerBaseObjectMapper extends Horde_Rdo_Mapper
     protected $_relationships = array(
         'eagerRelatedThing'  => array('type' => Horde_Rdo::ONE_TO_ONE,
                 'foreignKey' => 'relatedthing_id',
-                'mapper' => 'Horde_Rdo_Test_Objects_RelatedThingMapper'),
+                'mapper' => 'Horde\Rdo\Objects\RelatedThingMapper'),
             );
 }
