@@ -1,5 +1,4 @@
 <?php
-namespace Horde\Rdo;
 /**
  * A class for reused constants
  * 
@@ -11,7 +10,7 @@ namespace Horde\Rdo;
  * @category Horde
  * @package  Rdo
  */
-
+namespace Horde\Rdo;
 /**
  * @author   Chuck Hagenbuch <chuck@horde.org>
  * @author   Ralf Lang <lang@b1-systems.de>
@@ -42,5 +41,5 @@ class Constants
      * Many-to-many relationships (this object relates to many
      * objects, each of which relate to many objects of this type).
      */
-    const MANY_TO_MANY = 4; 
+    const MANY_TO_MANY = 4;
 }

@@ -1,25 +1,45 @@
 <?php
-
-namespace Horde\Rdo\Mapper;
-use Horde\Rdo\Mapper;
-use Horde\Rdo\Rampage;
-use Horde\Rdo\RampageObject;
-use Horde\Rdo\RdoException;
-use Horde\Rdo\Query;
-use Horde\Rdo\Query\Sql as SqlQuery;
 /**
- * The SQL Mapper implements the Mapper interface for Horde\Db adapters
+ * @category Horde
+ * @package  Rdo
  */
-class Sql implements Mapper
+namespace Horde\Rdo;
+use \Countable;
+use \Horde_Db_Adapter;
+use \Horde_Db_Adapter_Base_TableDefinition;
+use \Horde_Support_Inflector;
+use \Horde_String;
+
+/**
+ * Rdo Mapper Base class.
+ *
+ * Feature parity with traditional Horde_Rdo
+ * 
+ * Controls mapping of entity objects (instances of Base) from and to
+ * Horde_Db_Adapters.
+ *
+ * Public properties:
+ *   $adapter - Horde_Db_Adapter that stores this Mapper's objects.
+ *
+ *   $inflector - The Horde_Support_Inflector this mapper uses to singularize
+ *   and pluralize PHP class, database table, and database field/key names.
+ *
+ *   $table - The Horde_Db_Adapter_Base_TableDefinition object describing
+ *   the main table of this entity.
+ *
+ * @category Horde
+ * @package  Rdo
+ */
+abstract class BaseMapper implements Countable, Mapper
 {
     /**
      * If this is true and fields named created_at and updated_at are present,
      * Rdo will automatically set creation and last updated timestamps.
      * Timestamps are always GMT for portability.
      *
-     * @var bool
+     * @var boolean
      */
-    protected $setTimestamps = true;
+    protected $_setTimestamps = true;
 
     /**
      * What class should this Mapper create for objects? Defaults to the Mapper
@@ -28,7 +48,7 @@ class Sql implements Mapper
      *
      * @var string
      */
-    protected $classname;
+    protected $_classname;
 
     /**
      * The definition of the database table (or view, etc.) that holds this
@@ -36,7 +56,7 @@ class Sql implements Mapper
      *
      * @var Horde_Db_Adapter_Base_TableDefinition
      */
-    protected $tableDefinition;
+    protected $_tableDefinition;
 
     /**
      * Fields that should only be read from the database when they are
@@ -44,14 +64,14 @@ class Sql implements Mapper
      *
      * @var array
      */
-    protected $lazyFields = [];
+    protected $_lazyFields = array();
 
     /**
      * Relationships for this entity.
      *
      * @var array
      */
-    protected $relationships = [];
+    protected $_relationships = array();
 
     /**
      * Relationships that should only be read from the database when
@@ -59,7 +79,7 @@ class Sql implements Mapper
      *
      * @var array
      */
-    protected $lazyRelationships = [];
+    protected $_lazyRelationships = array();
 
     /**
      * Default sorting rule to use for all queries made with this mapper. This
@@ -67,37 +87,28 @@ class Sql implements Mapper
      *
      * @var string
      */
-    protected $defaultSort;
+    protected $_defaultSort;
 
     /**
      * The caching factory, if used
      *
-     * @var Horde_Rdo_Factory
+     * @var Factory
      */
     protected $_factory = null;
 
-    public function __construct(\Horde_Db_Adapter $adapter)
+    public function __construct(Horde_Db_Adapter $adapter)
     {
         $this->adapter = $adapter;
     }
 
     /**
-     * Get a new Query implementation which fits to this mapper
-     * 
-     * @return Query
-     */
-    public function getNewQuery()
-    {
-        return new SqlQuery($this);
-    }
-    /**
-     * Attach a Horde_Rdo_Factory to the mapper.
+     * Attach a Factory to the mapper.
      * If called without arguments, detaches the mapper from factory
      *
-     * @param Horde_Rdo_Factory $factory  A Factory instance or null
+     * @param Factory $factory  A Factory instance or null
      * @return Mapper  this mapper
      */
-    public function setFactory(Horde_Rdo_Factory $factory = null)
+    public function setFactory(Factory $factory = null)
     {
         $this->_factory = $factory;
         return $this;
@@ -114,7 +125,7 @@ class Sql implements Mapper
      * adapter: The Horde_Db_Adapter this mapper is using to talk to
      * the database.
      *
-     * factory: The Horde_Rdo_Factory instance, if present
+     * factory: The Factory instance, if present
      *
      * inflector: The Horde_Support_Inflector this Mapper uses to singularize
      * and pluralize PHP class, database table, and database field/key names.
@@ -142,7 +153,7 @@ class Sql implements Mapper
     {
         switch ($key) {
         case 'inflector':
-            $this->inflector = new \Horde_Support_Inflector();
+            $this->inflector = new Horde_Support_Inflector();
             return $this->inflector;
 
         case 'primaryKey':
@@ -158,7 +169,7 @@ class Sql implements Mapper
             return $this->tableDefinition;
 
         case 'fields':
-            $this->fields = array_diff($this->tableDefinition->getColumnNames(), $this->lazyFields);
+            $this->fields = array_diff($this->tableDefinition->getColumnNames(), $this->_lazyFields);
             return $this->fields;
 
         case 'lazyFields':
@@ -173,26 +184,26 @@ class Sql implements Mapper
     }
 
     /**
-     * Create an instance of $this->classname from a set of data.
+     * Create an instance of $this->_classname from a set of data.
      *
      * @param array $fields Field names/default values for the new object.
      *
-     * @see $classname
+     * @see $_classname
      *
-     * @return Rampage An instance of $this->classname with $fields
+     * @return Base An instance of $this->_classname with $fields
      * as initial data.
      */
-    public function map($fields = [])
+    public function map($fields = array())
     {
         // Guess a classname if one isn't explicitly set.
-        if (!$this->classname) {
-            $this->classname = $this->mapperToEntity();
-            if (!$this->classname) {
-                throw new RdoException('Unable to find an entity class (extending Horde_Rdo_Base) for ' . get_class($this));
+        if (!$this->_classname) {
+            $this->_classname = $this->mapperToEntity();
+            if (!$this->_classname) {
+                throw new RdoException('Unable to find an entity class (extending Base) for ' . get_class($this));
             }
         }
 
-        $o = new $this->classname();
+        $o = new $this->_classname();
         $o->setMapper($this);
 
         $this->mapFields($o, $fields);
@@ -205,14 +216,14 @@ class Sql implements Mapper
     }
 
     /**
-     * Update an instance of $this->classname from a set of data.
+     * Update an instance of $this->_classname from a set of data.
      *
-     * @param Rampage $object The object to update
+     * @param Base $object The object to update
      * @param array $fields Field names/default values for the object
      */
-    public function mapFields($object, $fields = [])
+    public function mapFields($object, $fields = array())
     {
-        $relationships = [];
+        $relationships = array();
         foreach ($fields as $fieldName => &$fieldValue) {
             if (strpos($fieldName, '@') !== false) {
                 list($rel, $field) = explode('@', $fieldName, 2);
@@ -245,7 +256,7 @@ class Sql implements Mapper
                 } else {
                     $m = $this->tableToMapper($relationship);
                     if (is_null($m)) {
-                        // @TODO Throw an exception?
+                        // @TODO Throw an RdoException?
                         continue;
                     }
                 }
@@ -264,11 +275,11 @@ class Sql implements Mapper
      *
      * @param string $table The database table name to look up.
      *
-     * @return Horde_Rdo_Mapper A new Mapper instance if it exists, else null.
+     * @return Mapper A new Mapper instance if it exists, else null.
      */
     public function tableToMapper($table)
     {
-        if (class_exists(($class = \Horde_String::ucwords($table) . 'Mapper'))) {
+        if (class_exists(($class = Horde_String::ucwords($table) . 'Mapper'))) {
             return new $class;
         }
         return null;
@@ -287,7 +298,7 @@ class Sql implements Mapper
     /**
      * Transform this mapper's class name to an entity class name.
      *
-     * @return string A Horde_Rdo_Base concrete class name if the class exists, else null.
+     * @return string A Base concrete class name if the class exists, else null.
      */
     public function mapperToEntity()
     {
@@ -307,7 +318,7 @@ class Sql implements Mapper
      */
     public function count($query = null)
     {
-        $query = $this->getNewQuery();
+        $query = BaseQuery::create($query, $this);
         $query->setFields('COUNT(*)')
               ->clearSort();
         list($sql, $bindParams) = $query->getQuery();
@@ -318,13 +329,13 @@ class Sql implements Mapper
      * Check if at least one object matches $query.
      *
      * @param mixed $query Either a primary key, an array of keys
-     *                     => values, or a Horde_Rdo_Query object.
+     *                     => values, or a Query object.
      *
      * @return boolean True or false.
      */
     public function exists($query)
     {
-        $query = $this->getNewQuery();
+        $query = BaseQuery::create($query, $this);
         $query->setFields(1)
               ->clearSort();
         list($sql, $bindParams) = $query->getQuery();
@@ -336,14 +347,14 @@ class Sql implements Mapper
      *
      * @param array $fields Array of field names => initial values.
      *
-     * @return Horde_Rdo_Base The newly created object.
+     * @return Base The newly created object.
      */
     public function create($fields)
     {
         // If configured to record creation and update times, set them
         // here. We set updated_at to the initial creation time so it's
         // always set.
-        if ($this->setTimestamps) {
+        if ($this->_setTimestamps) {
             $time = time();
             $fields['created_at'] = $time;
             $fields['updated_at'] = $time;
@@ -357,9 +368,9 @@ class Sql implements Mapper
         }
 
         $sql = 'INSERT INTO ' . $this->adapter->quoteTableName($this->table);
-        $keys = [];
-        $placeholders = [];
-        $bindParams = [];
+        $keys = array();
+        $placeholders = array();
+        $bindParams = array();
         foreach ($fields as $field => $value) {
             $keys[] = $this->adapter->quoteColumnName($field);
             $placeholders[] = '?';
@@ -386,7 +397,7 @@ class Sql implements Mapper
      */
     public function update($object, $fields = null)
     {
-        if ($object instanceof Horde_Rdo_Base) {
+        if ($object instanceof Base) {
             $key = $this->primaryKey;
             $id = $object->$key;
             $fields = iterator_to_array($object);
@@ -402,7 +413,7 @@ class Sql implements Mapper
         }
 
         // If configured to record update time, set it here.
-        if ($this->setTimestamps) {
+        if ($this->_setTimestamps) {
             $fields['updated_at'] = time();
         }
 
@@ -415,7 +426,7 @@ class Sql implements Mapper
         }
 
         $sql = 'UPDATE ' . $this->adapter->quoteTableName($this->table) . ' SET';
-        $bindParams = [];
+        $bindParams = array();
         foreach ($fields as $field => $value) {
             $sql .= ' ' . $this->adapter->quoteColumnName($field) . ' = ?,';
             $bindParams[] = $value;
@@ -430,14 +441,14 @@ class Sql implements Mapper
      * Deletes a record from the backend. $object can be either a
      * primary key, an Rdo_Query object, or an Rdo object.
      *
-     * @param string|Horde_Rdo_Base|Horde_Rdo_Query $object The Rdo object,
-     * Horde_Rdo_Query, or unique id to delete.
+     * @param string|Base|Query $object The Rdo object,
+     * Query, or unique id to delete.
      *
      * @return integer Number of objects deleted.
      */
     public function delete($object)
     {
-        if ($object instanceof Rampage) {
+        if ($object instanceof Base) {
             $key = $this->primaryKey;
             $id = $object->$key;
             $query = array($key => $id);
@@ -448,10 +459,10 @@ class Sql implements Mapper
             $query = array($key => $object);
         }
 
-        $query = $this->getNewQuery();
+        $query = BaseQuery::create($query, $this);
 
-        $clauses = [];
-        $bindParams = [];
+        $clauses = array();
+        $bindParams = array();
         foreach ($query->tests as $test) {
             $clauses[] = $this->adapter->quoteColumnName($test['field']) . ' ' . $test['test'] . ' ?';
             $bindParams[] = $test['value'];
@@ -477,9 +488,9 @@ class Sql implements Mapper
      * returned.
      *
      * If you pass find() an associative array, it will be turned into a
-     * Horde_Rdo_Query object.
+     * Query object.
      *
-     * If you pass find() a Horde_Rdo_Query, it will return a list of all
+     * If you pass find() a Query, it will return a list of all
      * objects matching that query.
      */
     public function find($arg = null)
@@ -494,7 +505,7 @@ class Sql implements Mapper
             if (is_numeric(key($arg))) {
                 // Numerically indexed arrays are assumed to be an array of
                 // primary keys.
-                $query = $this->getNewQuery();
+                $query = new BaseQuery();
                 $query->combineWith('OR');
                 foreach ($argv[0] as $id) {
                     $query->addTest($this->primaryKey, '=', $id);
@@ -507,6 +518,7 @@ class Sql implements Mapper
         }
 
         // Build a full Query object.
+        $query = BaseQuery::create($query, $this);
         return new DefaultList($query);
     }
 
@@ -518,16 +530,16 @@ class Sql implements Mapper
      * - For many-to-many relations, adds an entry in the "through" table.
      * - Performs a no-op if the peer is already related.
      *
-     * @param string  $relationship    The relationship key in the mapper.
-     * @param Rampage $ours    The object from this mapper to add the
+     * @param string $relationship    The relationship key in the mapper.
+     * @param Base $ours    The object from this mapper to add the
      *                                relation.
-     * @param Rampage $theirs  The other object from any mapper to add
+     * @param Base $theirs  The other object from any mapper to add
      *                                the relation.
      *
      * @throws RdoException
      */
-    public function addRelation($relationship, Rampage $ours,
-                                Rampage $theirs)
+    public function addRelation($relationship, Base $ours,
+                                Base $theirs)
     {
         if ($ours->hasRelation($relationship, $theirs)) {
             return;
@@ -563,7 +575,7 @@ class Sql implements Mapper
                            $this->adapter->quoteColumnName($theirKey));
             try {
                 $this->adapter->insert($sql, array($ours->$ourKey, $theirs->$theirKey));
-            } catch (\Horde_Db_Exception $e) {
+            } catch (Horde_Db_Exception $e) {
                 throw new RdoException($e);
             }
             break;
@@ -582,17 +594,14 @@ class Sql implements Mapper
      * This is a proxy to the mapper's removeRelation method.
      *
      * @param string $relationship    The relationship key in the mapper.
-     * @param Rampage $ours    The object from this mapper.
-     * @param rampage $theirs  The object to remove from the relation.
+     * @param Base $ours    The object from this mapper.
+     * @param Base $theirs  The object to remove from the relation.
      * @return integer  the number of affected relations
      *
      * @throws RdoException
      */
-    public function removeRelation(
-        string $relationship, 
-        Rampage $ours,
-        Rampage $theirs = null
-    )
+    public function removeRelation($relationship, Base $ours,
+                                   Base $theirs = null)
     {
         if (!$ours->hasRelation($relationship, $theirs)) {
             return;
@@ -635,7 +644,7 @@ class Sql implements Mapper
             }
             try {
                 return $this->adapter->delete($sql, $values);
-            } catch (\Horde_Db_Exception $e) {
+            } catch (Horde_Db_Exception $e) {
                 throw new RdoException($e);
             }
             break;
@@ -652,9 +661,9 @@ class Sql implements Mapper
      * returned.
      *
      * If you pass findOne() an associative array, it will be turned into a
-     * Horde_Rdo_Query object.
+     * Query object.
      *
-     * If you pass findOne() a Horde_Rdo_Query, it will return the first object
+     * If you pass findOne() a Query, it will return the first object
      * matching that query.
      */
     public function findOne($arg = null)
@@ -668,7 +677,7 @@ class Sql implements Mapper
         }
 
         // Build a full Query object, and limit it to one result.
-        $query = $this->getNewQuery();
+        $query = BaseQuery::create($query, $this);
         $query->limit(1);
 
         $list = new DefaultList($query);
@@ -682,8 +691,7 @@ class Sql implements Mapper
      */
     public function sortBy($sort)
     {
-        $this->defaultSort = $sort;
+        $this->_defaultSort = $sort;
         return $this;
     }
-
 }

@@ -1,18 +1,22 @@
 <?php
 /**
- * Rampage is a data holding object without much behaviour
- * It is the default result of a request to Reader
- * 
+ * @category Horde
+ * @package Rdo
  */
 namespace Horde\Rdo;
+use \IteratorAggregate;
+use \ArrayAccess;
+use \Horde_String;
+
 /**
- * @author   Chuck Hagenbuch <chuck@horde.org>
- * @author   Ralf Lang <lang@b1-systems.de>
- * @license  http://www.horde.org/licenses/bsd BSD
+ * Straight port of Horde_Rdo_Base from traditional Rdo
+ * Horde\Rdo\Base abstract class (Rampage Data Objects). Entity
+ * classes extend this baseline.
+ *
  * @category Horde
- * @package  Rdo
+ * @package Rdo
  */
-class RampageObject implements Rampage
+abstract class Base implements Entity, IteratorAggregate, ArrayAccess
 {
     /**
      * The Mapper instance associated with this Rdo object. The
@@ -21,14 +25,14 @@ class RampageObject implements Rampage
      * @see Mapper
      * @var Mapper
      */
-    protected $mapper;
+    protected Mapper $_mapper;
 
     /**
      * This object's fields.
      *
      * @var array
      */
-    protected $fields = [];
+    protected array $_fields = array();
 
     /**
      * Constructor. Can be called directly by a programmer, or is
@@ -39,10 +43,9 @@ class RampageObject implements Rampage
      *
      * @see Mapper::map()
      */
-    public function __construct(array $fields = [], string $iterator = '')
+    public function __construct(array $fields = array())
     {
         $this->setFields($fields);
-        $this->setIterator($iterator);
     }
 
     /**
@@ -62,14 +65,14 @@ class RampageObject implements Rampage
     /**
      * Fetch fields that haven't yet been loaded. Lazy-loaded fields
      * and lazy-loaded relationships are handled this way. Once a
-     * field is retrieved, it is cached in the $fields array so it
+     * field is retrieved, it is cached in the $_fields array so it
      * doesn't need to be fetched again.
      *
      * @param string $field The name of the field to access.
      *
      * @return mixed The value of $field or null.
      */
-    public function __get(string $field)
+    public function __get($field)
     {
         // Honor any explicit getters.
         $fieldMethod = 'get' . Horde_String::ucfirst($field);
@@ -80,8 +83,8 @@ class RampageObject implements Rampage
             return call_user_func(array($this, $fieldMethod));
         }
 
-        if (isset($this->fields[$field])) {
-            return $this->fields[$field];
+        if (isset($this->_fields[$field])) {
+            return $this->_fields[$field];
         }
 
         $mapper = $this->getMapper();
@@ -93,8 +96,8 @@ class RampageObject implements Rampage
             $query->setFields($field)
                    ->addTest($mapper->primaryKey, '=', $this->{$mapper->primaryKey});
             list($sql, $params) = $query->getQuery();
-            $this->fields[$field] = $mapper->adapter->selectValue($sql, $params);;
-            return $this->fields[$field];
+            $this->_fields[$field] = $mapper->adapter->selectValue($sql, $params);;
+            return $this->_fields[$field];
         } elseif (isset($mapper->lazyRelationships[$field])) {
             $rel = $mapper->lazyRelationships[$field];
         } else {
@@ -123,22 +126,22 @@ class RampageObject implements Rampage
         // objects and fill the cache.
         switch ($rel['type']) {
         case Constants::ONE_TO_ONE:
-        case Constants::MANY_TO_ONE:
+        case Constances::MANY_TO_ONE:
             if (isset($rel['query'])) {
                 $query = $this->_fillPlaceholders($rel['query']);
-                $this->fields[$field] = $m->findOne($query);
+                $this->_fields[$field] = $m->findOne($query);
             } elseif (!empty($this->{$rel['foreignKey']})) {
-                $this->fields[$field] = $m->findOne($this->{$rel['foreignKey']});
-                if (empty($this->fields[$field])) {
-                    throw new RdoRdoException('The referenced object with key ' . $this->{$rel['foreignKey']} . ' does not exist. Your data is inconsistent');
+                $this->_fields[$field] = $m->findOne($this->{$rel['foreignKey']});
+                if (empty($this->_fields[$field])) {
+                    throw new RdoException('The referenced object with key ' . $this->{$rel['foreignKey']} . ' does not exist. Your data is inconsistent');
                 }
             } else {
-                $this->fields[$field] = null;
+                $this->_fields[$field] = null;
             }
             break;
 
         case Constants::ONE_TO_MANY:
-            $this->fields[$field] = $m->find(array($rel['foreignKey'] => $this->{$rel['foreignKey']}));
+            $this->_fields[$field] = $m->find(array($rel['foreignKey'] => $this->{$rel['foreignKey']}));
             break;
 
         case Constants::MANY_TO_MANY:
@@ -148,12 +151,12 @@ class RampageObject implements Rampage
             $query->addRelationship($field, array('mapper' => $mapper,
                                                   'table' => $rel['through'],
                                                   'type' => Constants::MANY_TO_MANY,
-                                                  'query' => array("$m->table.$on" => new BaseQuery\Literal($rel['through'] . '.' . $on), $key => $this->$key)));
-            $this->fields[$field] = $m->find($query);
+                                                  'query' => array("$m->table.$on" => new BaseQuery_Literal($rel['through'] . '.' . $on), $key => $this->$key)));
+            $this->_fields[$field] = $m->find($query);
             break;
         }
 
-        return $this->fields[$field];
+        return $this->_fields[$field];
     }
 
     /**
@@ -183,7 +186,7 @@ class RampageObject implements Rampage
             return call_user_func(array($this, $fieldMethod), $value);
         }
 
-        $this->fields[$field] = $value;
+        $this->_fields[$field] = $value;
     }
 
     /**
@@ -205,7 +208,7 @@ class RampageObject implements Rampage
     public function __isset($field)
     {
         $m = $this->getMapper();
-        return isset($this->fields[$field])
+        return isset($this->_fields[$field])
             || isset($m->fields[$field])
             || isset($m->lazyFields[$field])
             || isset($m->relationships[$field])
@@ -232,7 +235,7 @@ class RampageObject implements Rampage
     {
         // @TODO Should unsetting a MANY_TO_MANY relationship remove
         // the relationship?
-        unset($this->fields[$field]);
+        unset($this->_fields[$field]);
     }
 
     /**
@@ -252,9 +255,9 @@ class RampageObject implements Rampage
      *
      * @see Mapper::map()
      */
-    public function setFields($fields = [])
+    public function setFields($fields = array())
     {
-        $this->fields = $fields;
+        $this->_fields = $fields;
     }
 
     /**
@@ -265,17 +268,7 @@ class RampageObject implements Rampage
      */
     public function getIterator()
     {
-        return new $this->{iteratorClass}($this);
-    }
-
-    /**
-     * Change the default iterator
-     * 
-     * @since Rdo 3.0
-     */
-    public function setIterator(string $iterator = '')
-    {
-        $this->iteratorClass = $iterator ?? DefaultIterator::class;
+        return new DefaultIterator($this);
     }
 
     /**
@@ -294,23 +287,23 @@ class RampageObject implements Rampage
      * - The programmer can call $rdoObject->setMapper($mapper) to provide a
      *   mapper object.
      *
-     * A RdoRdoException will be thrown if none of these
+     * A RdoException will be thrown if none of these
      * conditions are met.
      *
      * @return Mapper The Mapper instance managing this object.
      */
     public function getMapper()
     {
-        if (!$this->mapper) {
+        if (!$this->_mapper) {
             $class = get_class($this) . 'Mapper';
             if (class_exists($class)) {
-                $this->mapper = new $class();
+                $this->_mapper = new $class();
             } else {
                 throw new RdoRdoException('No Mapper object found. Override getMapper() or define the ' . get_class($this) . 'Mapper class.');
             }
         }
 
-        return $this->mapper;
+        return $this->_mapper;
     }
 
     /**
@@ -323,7 +316,7 @@ class RampageObject implements Rampage
      */
     public function setMapper($mapper)
     {
-        $this->mapper = $mapper;
+        $this->_mapper = $mapper;
     }
 
     /**
@@ -337,11 +330,11 @@ class RampageObject implements Rampage
      * This is a proxy to the mapper's addRelation() method.
      *
      * @param string $relationship  The relationship key in the mapper.
-     * @param Rampage $peer  The object to add the relation.
+     * @param Base $peer  The object to add the relation.
      *
      * @throws RdoRdoException
      */
-    public function addRelation($relationship, Rampage $peer)
+    public function addRelation($relationship, Base $peer)
     {
         $this->mapper->addRelation($relationship, $this, $peer);
     }
@@ -351,14 +344,14 @@ class RampageObject implements Rampage
      * relationships in the mapper.
      *
      * @param string $relationship  The relationship key in the mapper.
-     * @param Rampage $peer  The object to check for the relation.
+     * @param Base $peer  The object to check for the relation.
      *                              If this is null, check if there is any peer
      *                              for this relation.
      *
      * @return boolean  True if related.
      * @throws RdoRdoException
      */
-    public function hasRelation($relationship, Rampage $peer = null)
+    public function hasRelation($relationship, Base $peer = null)
     {
         $mapper = $this->getMapper();
         if (isset($mapper->relationships[$relationship])) {
@@ -409,13 +402,33 @@ class RampageObject implements Rampage
      * This is a proxy to the mapper's removeRelation method.
      *
      * @param string $relationship  The relationship key in the mapper
-     * @param Rampage $peer  The object to remove from the relation
+     * @param Base $peer  The object to remove from the relation
      * @return integer  The number of relations affected
      * @throws RdoRdoException
      */
-    public function removeRelation(string $relationship, Rampage $peer = null): integer
+    public function removeRelation($relationship, Base $peer = null)
     {
         return $this->mapper->removeRelation($relationship, $this, $peer);
+    }
+
+    /**
+     * Save any changes to the backend.
+     *
+     * @return boolean Success.
+     */
+    public function save()
+    {
+        return $this->getMapper()->update($this) == 1;
+    }
+
+    /**
+     * Delete this object from the backend.
+     *
+     * @return boolean Success or failure.
+     */
+    public function delete()
+    {
+        return $this->getMapper()->delete($this) == 1;
     }
 
     /**
@@ -445,16 +458,16 @@ class RampageObject implements Rampage
      * the database is not unnecessarily queried because of
      * lazyFields/lazyRelationships.
      *
-     * @since Rdo 2.1.0
+     * @since Horde_Rdo 2.1.0
      *
      * @param bool $lazy           Whether lazy elements should be added.
      * @param bool $relationships  Whether relationships should be added.
      *
      * @return array  All selected fields and relationships.
      */
-    public function toArray(bool $lazy = false, bool $relationships = false)
+    public function toArray($lazy = false, $relationships = false)
     {
-        $array = [];
+        $array = array();
 
         $m = $this->getMapper();
 
@@ -482,5 +495,4 @@ class RampageObject implements Rampage
 
         return $array;
     }
-    
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * An interface for an entity yielding or wrapping a Rampage object
+ * An interface for an entity
  */
 namespace Horde\Rdo;
 /**

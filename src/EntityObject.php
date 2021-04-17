@@ -1,6 +1,8 @@
 <?php
 /**
- * An interface for an entity yielding or wrapping a Rampage object
+ * Base implementation of an entity
+ * 
+ * This is the default entity if no overridden type exists
  */
 namespace Horde\Rdo;
 /**

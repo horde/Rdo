@@ -4,58 +4,57 @@
  * @package Rdo
  */
 namespace Horde\Rdo;
+use \Iterator;
+use \array_merge;
 /**
- * Iterator for Horde_Rdo_Base objects that allows relationships and
+ * Iterator for Base objects that allows relationships and
  * decorated objects to be handled gracefully.
  *
- * @author   Chuck Hagenbuch <chuck@horde.org>
- * @author   Ralf Lang <lang@b1-systems.de>
- * @license  http://www.horde.org/licenses/bsd BSD
  * @category Horde
- * @package  Rdo
+ * @package Rdo
  */
-class DefaultIterator implements \Iterator {
+class DefaultIterator implements Iterator {
 
     /**
-     * @var Rampage
+     * @var Base
      */
-    private $rampage;
+    private $_rdo;
 
     /**
      * List of keys that we'll iterator over. This is the combined
      * list of the fields, lazyFields, relationships, and
-     * lazyRelationships properties from the objects Horde_Rdo_Mapper.
+     * lazyRelationships properties from the objects Mapper.
      */
-    private $keys = [];
+    private $_keys = array();
 
     /**
      * Current index
      *
      * @var mixed
      */
-    private $index = null;
+    private $_index = null;
 
     /**
      * Are we inside the array bounds?
      *
      * @var boolean
      */
-    private $valid = false;
+    private $_valid = false;
 
     /**
-     * New Horde_Rdo_Iterator for iterating over Rdo objects.
+     * New Iterator for iterating over Rdo objects.
      *
-     * @param Rampage $rdo The object to iterate over
+     * @param Base $rdo The object to iterate over
      */
-    public function __construct(Rampage $rampage)
+    public function __construct($rdo)
     {
-        $this->rampage = $rampage;
+        $this->_rdo = $rdo;
 
-        $this->keys = array_merge(
-            $rampage->getEagerFields(),
-            $rampage->getLazyFields(),
-            $rampage->getRelationships(),
-            $rampage->getLazyRelationships());
+        $m = $rdo->getMapper();
+        $this->_keys = array_merge($m->fields,
+                                   $m->lazyFields,
+                                   array_keys($m->relationships),
+                                   array_keys($m->lazyRelationships));
     }
 
     /**
@@ -74,7 +73,7 @@ class DefaultIterator implements \Iterator {
     public function current()
     {
         $key = $this->key();
-        return $this->rampage->getValue($key);
+        return $this->_rdo->$key;
     }
 
     /**
@@ -84,7 +83,7 @@ class DefaultIterator implements \Iterator {
      */
     public function key()
     {
-        return current($this->keys);
+        return current($this->_keys);
     }
 
     /**
@@ -92,7 +91,7 @@ class DefaultIterator implements \Iterator {
      */
     public function next()
     {
-        $this->valid = (false !== next($this->keys));
+        $this->_valid = (false !== next($this->_keys));
     }
 
     /**
@@ -102,7 +101,7 @@ class DefaultIterator implements \Iterator {
      */
     public function valid()
     {
-        return $this->valid;
+        return $this->_valid;
     }
 
 }
