@@ -130,7 +130,7 @@ class RampageObject implements Rampage
             } elseif (!empty($this->{$rel['foreignKey']})) {
                 $this->fields[$field] = $m->findOne($this->{$rel['foreignKey']});
                 if (empty($this->fields[$field])) {
-                    throw new RdoRdoException('The referenced object with key ' . $this->{$rel['foreignKey']} . ' does not exist. Your data is inconsistent');
+                    throw new RdoException('The referenced object with key ' . $this->{$rel['foreignKey']} . ' does not exist. Your data is inconsistent');
                 }
             } else {
                 $this->fields[$field] = null;
@@ -294,7 +294,7 @@ class RampageObject implements Rampage
      * - The programmer can call $rdoObject->setMapper($mapper) to provide a
      *   mapper object.
      *
-     * A RdoRdoException will be thrown if none of these
+     * A RdoException will be thrown if none of these
      * conditions are met.
      *
      * @return Mapper The Mapper instance managing this object.
@@ -306,7 +306,7 @@ class RampageObject implements Rampage
             if (class_exists($class)) {
                 $this->mapper = new $class();
             } else {
-                throw new RdoRdoException('No Mapper object found. Override getMapper() or define the ' . get_class($this) . 'Mapper class.');
+                throw new RdoException('No Mapper object found. Override getMapper() or define the ' . get_class($this) . 'Mapper class.');
             }
         }
 
@@ -339,7 +339,7 @@ class RampageObject implements Rampage
      * @param string $relationship  The relationship key in the mapper.
      * @param Rampage $peer  The object to add the relation.
      *
-     * @throws RdoRdoException
+     * @throws RdoException
      */
     public function addRelation($relationship, Rampage $peer)
     {
@@ -356,7 +356,7 @@ class RampageObject implements Rampage
      *                              for this relation.
      *
      * @return boolean  True if related.
-     * @throws RdoRdoException
+     * @throws RdoException
      */
     public function hasRelation($relationship, Rampage $peer = null)
     {
@@ -366,7 +366,7 @@ class RampageObject implements Rampage
         } elseif (isset($mapper->lazyRelationships[$relationship])) {
             $rel = $mapper->lazyRelationships[$relationship];
         } else {
-            throw new RdoRdoException('The requested relation is not defined in the mapper');
+            throw new RdoException('The requested relation is not defined in the mapper');
         }
 
         $result = $this->$relationship;
@@ -411,7 +411,7 @@ class RampageObject implements Rampage
      * @param string $relationship  The relationship key in the mapper
      * @param Rampage $peer  The object to remove from the relation
      * @return integer  The number of relations affected
-     * @throws RdoRdoException
+     * @throws RdoException
      */
     public function removeRelation(string $relationship, Rampage $peer = null): integer
     {

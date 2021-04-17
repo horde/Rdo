@@ -299,7 +299,7 @@ abstract class Base implements Entity, IteratorAggregate, ArrayAccess
             if (class_exists($class)) {
                 $this->_mapper = new $class();
             } else {
-                throw new RdoRdoException('No Mapper object found. Override getMapper() or define the ' . get_class($this) . 'Mapper class.');
+                throw new RdoException('No Mapper object found. Override getMapper() or define the ' . get_class($this) . 'Mapper class.');
             }
         }
 
@@ -332,7 +332,7 @@ abstract class Base implements Entity, IteratorAggregate, ArrayAccess
      * @param string $relationship  The relationship key in the mapper.
      * @param Base $peer  The object to add the relation.
      *
-     * @throws RdoRdoException
+     * @throws RdoException
      */
     public function addRelation($relationship, Base $peer)
     {
@@ -349,7 +349,7 @@ abstract class Base implements Entity, IteratorAggregate, ArrayAccess
      *                              for this relation.
      *
      * @return boolean  True if related.
-     * @throws RdoRdoException
+     * @throws RdoException
      */
     public function hasRelation($relationship, Base $peer = null)
     {
@@ -359,7 +359,7 @@ abstract class Base implements Entity, IteratorAggregate, ArrayAccess
         } elseif (isset($mapper->lazyRelationships[$relationship])) {
             $rel = $mapper->lazyRelationships[$relationship];
         } else {
-            throw new RdoRdoException('The requested relation is not defined in the mapper');
+            throw new RdoException('The requested relation is not defined in the mapper');
         }
 
         $result = $this->$relationship;
@@ -404,7 +404,7 @@ abstract class Base implements Entity, IteratorAggregate, ArrayAccess
      * @param string $relationship  The relationship key in the mapper
      * @param Base $peer  The object to remove from the relation
      * @return integer  The number of relations affected
-     * @throws RdoRdoException
+     * @throws RdoException
      */
     public function removeRelation($relationship, Base $peer = null)
     {
