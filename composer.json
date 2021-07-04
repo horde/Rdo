@@ -1,5 +1,4 @@
 {
-    "minimum-stability": "dev",
     "name": "horde/rdo",
     "description": "ORM (object relational-mapping) library",
     "type": "library",
@@ -12,7 +11,7 @@
             "role": "lead"
         }
     ],
-    "time": "2021-03-13",
+    "time": "2021-07-04",
     "repositories": [
         {
             "type": "composer",
@@ -21,12 +20,13 @@
     ],
     "require": {
         "php": "^7",
-        "horde/db": "^3 || dev-FRAMEWORK_6_0",
-        "horde/exception": "^3 || dev-FRAMEWORK_6_0",
-        "horde/util": "^3 || dev-FRAMEWORK_6_0"
+        "horde/db": "^3",
+        "horde/exception": "^3",
+        "horde/util": "^3"
     },
+    "require-dev": {},
     "suggest": {
-        "horde/test": "^3 || dev-FRAMEWORK_6_0"
+        "horde/test": "^3"
     },
     "autoload": {
         "psr-0": {
