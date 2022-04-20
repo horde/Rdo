@@ -12,11 +12,11 @@
             "role": "lead"
         }
     ],
-    "time": "2021-07-04",
+    "time": "2022-04-20",
     "repositories": [
         {
             "type": "composer",
-            "url": "https://horde-satis.maintaina.com/"
+            "url": "https://horde-satis.maintaina.com"
         }
     ],
     "require": {
@@ -25,16 +25,27 @@
         "horde/exception": "^3 || dev-FRAMEWORK_6_0",
         "horde/util": "^3 || dev-FRAMEWORK_6_0"
     },
-    "require-dev": {},
-    "suggest": {
-        "horde/test": "^3 || dev-FRAMEWORK_6_0"
+    "require-dev": {
+        "horde/test": "dev-FRAMEWORK_6_0",
+        "horde/log": "dev-FRAMEWORK_6_0"
     },
+    "suggest": {},
     "autoload": {
         "psr-0": {
             "Horde_Rdo": "lib/"
         },
         "psr-4": {
             "Horde\\Rdo\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Horde\\Rdo\\Test\\": "test/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "horde/horde-installer-plugin": true
         }
     }
 }

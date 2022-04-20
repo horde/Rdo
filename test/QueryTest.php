@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2016-2017 Horde LLC (http://www.horde.org/)
  *
@@ -8,12 +9,14 @@
  * @subpackage UnitTests
  * @license    http://www.horde.org/licenses/lgpl21 LGPL 2.1
  */
-namespace Horde\Rdo;
+
+namespace Horde\Rdo\Test;
+
 use Horde_Test_Case as TestCase;
-use \Horde_Test_Factory_Db;
-use \Horde_Rdo_Test_Objects_SimpleMapper;
-use \Horde_Db_Migration_Base;
-use \Horde_Rdo_Query;
+use Horde_Test_Factory_Db;
+use Horde_Rdo_Test_Objects_SimpleMapper;
+use Horde_Db_Migration_Base;
+use Horde_Rdo_Query;
 
 class QueryTest extends TestCase
 {
@@ -26,14 +29,15 @@ class QueryTest extends TestCase
         $this->db = $factory_db->create();
         $this->mapper = new Horde_Rdo_Test_Objects_SimpleMapper($this->db);
         $migration = new Horde_Db_Migration_Base($this->db);
-        
+
         $currentTables = $migration->tables();
         if (in_array('horde_rdo_test', $currentTables)) {
             $migration->dropTable('horde_rdo_test');
         }
 
         $t = $migration->createTable(
-            'horde_rdo_test', array('autoincrementKey' => 'id')
+            'horde_rdo_test',
+            array('autoincrementKey' => 'id')
         );
         $t->column('intprop', 'integer');
         $t->column('textprop', 'string');

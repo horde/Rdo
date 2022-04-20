@@ -48,9 +48,10 @@ jobs:
     - name: Install horde/test dependency and other dependencies
       run: |
         ## For unclear reasons, github action fails randomly if we do not install before we require.
-        COMPOSER_ROOT_VERSION=dev-FRAMEWORK_6_0 composer install
+        COMPOSER_ROOT_VERSION=dev-FRAMEWORK_6_0 composer config minimum-stability dev
         COMPOSER_ROOT_VERSION=dev-FRAMEWORK_6_0 composer require --dev horde/test dev-FRAMEWORK_6_0 horde/log dev-FRAMEWORK_6_0
+        COMPOSER_ROOT_VERSION=dev-FRAMEWORK_6_0 composer install
     - name: install horde/db ^3
       run: composer require horde/db ^3
     - name: run phpunit
-      run: phpunit --bootstrap test/Horde/Rdo/bootstrap.php test/Horde/Rdo/
+      run: phpunit --bootstrap test/bootstrap.php

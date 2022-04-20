@@ -29,6 +29,6 @@ dependencies:
       horde/db: ^3
       horde/exception: ^3
       horde/util: ^3
-  optional:
+  dev:
     composer:
       horde/test: ^3
