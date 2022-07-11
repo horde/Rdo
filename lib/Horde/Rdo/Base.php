@@ -189,7 +189,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
      *
      * @see __set()
      */
-    public function offsetSet($field, $value)
+    public function offsetSet($field, $value): void
     {
         $this->__set($field, $value);
     }
@@ -215,7 +215,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
      *
      * @see __isset()
      */
-    public function offsetExists($field)
+    public function offsetExists($field): bool
     {
         return $this->__isset($field);
     }
@@ -238,7 +238,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
      *
      * @see __unset()
      */
-    public function offsetUnset($field)
+    public function offsetUnset($field): void
     {
         $this->__unset($field);
     }
@@ -261,7 +261,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
      *
      * @return Horde_Rdo_Iterator The Iterator instance.
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new Horde_Rdo_Iterator($this);
     }

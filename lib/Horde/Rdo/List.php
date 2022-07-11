@@ -122,7 +122,7 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
     /**
      * Implementation of the rewind() method for iterator.
      */
-    public function rewind()
+    public function rewind(): void
     {
         if ($this->_result) {
             unset($this->_result);
@@ -167,7 +167,7 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
      * @return Horde_Rdo_Base|null The next Rdo object in the set or
      * null if no more results.
      */
-    public function next()
+    public function next(): void
     {
         if (is_null($this->_result)) {
             $this->rewind();
@@ -190,7 +190,7 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
             }
         }
 
-        return $this->_current;
+        // return $this->_current;
     }
 
     /**
@@ -200,7 +200,7 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
      *
      * @return boolean  Whether or not an offset exists.
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         $query = Horde_Rdo_Query::create($this->_query);
         $query->limit(1, $offset);
@@ -232,7 +232,7 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
      * 
      * @return Horde_Rdo_Base  An entity object at the offset position or null
      */
-    public function offsetSet($offset, $item)
+    public function offsetSet($offset, $item): void
     {
         throw new Horde_Rdo_Exception('You cannot add objects to a result set');
     }
@@ -247,7 +247,7 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
      *
      * @return Horde_Rdo_Base  An entity object at the offset position or null
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         throw new Horde_Rdo_Exception('You cannot remove objects from a result set');
     }
@@ -257,7 +257,7 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
      *
      * @return boolean Whether the iteration is valid
      */
-    public function valid()
+    public function valid(): bool
     {
         if (is_null($this->_result)) {
             $this->rewind();
@@ -270,7 +270,7 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
      *
      * @return integer Number of elements in the list
      */
-    public function count()
+    public function count(): int
     {
         if (is_null($this->_count)) {
             $this->_count = $this->_mapper->count($this->_query);

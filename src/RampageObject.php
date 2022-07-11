@@ -413,7 +413,7 @@ class RampageObject implements Rampage
      * @return integer  The number of relations affected
      * @throws RdoException
      */
-    public function removeRelation(string $relationship, Rampage $peer = null): integer
+    public function removeRelation(string $relationship, Rampage $peer = null): int
     {
         return $this->mapper->removeRelation($relationship, $this, $peer);
     }
