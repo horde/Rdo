@@ -11,7 +11,7 @@
   <email>chuck@horde.org</email>
   <active>no</active>
  </lead>
- <date>2021-07-04</date>
+ <date>2022-11-04</date>
  <version>
   <release>3.0.0alpha5</release>
   <api>3.0.0alpha1</api>
@@ -20,9 +20,10 @@
   <release>alpha</release>
   <api>alpha</api>
  </stability>
- <license uri="http://www.horde.org/licenses/lgpl21">LGPL-2.1</license>
+ <license uri="http://www.horde.org/licenses/lgpl21">LGPL-2.1-only</license>
  <notes>
-* 
+* [rla] Enable PHP 8.x compat.
+* |+
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
@@ -30,6 +31,7 @@
     <dir name="workflows">
      <file name="ci.yml" role="php" />
      <file name="phpdoc.yml" role="php" />
+     <file name="update-satis.yml" role="php" />
     </dir> <!-- /.github/workflows -->
    </dir> <!-- /.github -->
    <dir name="doc">
@@ -95,36 +97,35 @@
     <file name="RdoException.php" role="php" />
    </dir> <!-- /src -->
    <dir name="test">
-    <dir name="Horde">
-     <dir name="Rdo">
-      <dir name="fixtures">
-       <file name="unit_tests.sql" role="test" />
-      </dir> <!-- /test/Horde/Rdo/fixtures -->
-      <dir name="Objects">
-       <file name="ManyToManyA.php" role="test" />
-       <file name="ManyToManyAMapper.php" role="test" />
-       <file name="ManyToManyB.php" role="test" />
-       <file name="ManyToManyBMapper.php" role="test" />
-       <file name="RelatedThing.php" role="test" />
-       <file name="RelatedThingMapper.php" role="test" />
-       <file name="SimpleMapper.php" role="test" />
-       <file name="SomeEagerBaseObject.php" role="test" />
-       <file name="SomeEagerBaseObjectMapper.php" role="test" />
-       <file name="SomeLazyBaseObject.php" role="test" />
-       <file name="SomeLazyBaseObjectMapper.php" role="test" />
-      </dir> <!-- /test/Horde/Rdo/Objects -->
-      <dir name="Sql">
-       <dir name="Pdo">
-        <file name="SqliteTest.php" role="test" />
-       </dir> <!-- /test/Horde/Rdo/Sql/Pdo -->
-       <file name="Base.php" role="test" />
-      </dir> <!-- /test/Horde/Rdo/Sql -->
-      <file name="AllTests.php" role="test" />
-      <file name="Autoload.php" role="test" />
-      <file name="bootstrap.php" role="test" />
-      <file name="QueryTest.php" role="test" />
-     </dir> <!-- /test/Horde/Rdo -->
-    </dir> <!-- /test/Horde -->
+    <dir name="fixtures">
+     <file name="unit_tests.sql" role="test" />
+    </dir> <!-- /test/fixtures -->
+    <dir name="Objects">
+     <file name="ManyToManyA.php" role="test" />
+     <file name="ManyToManyAMapper.php" role="test" />
+     <file name="ManyToManyB.php" role="test" />
+     <file name="ManyToManyBMapper.php" role="test" />
+     <file name="RelatedThing.php" role="test" />
+     <file name="RelatedThingMapper.php" role="test" />
+     <file name="SimpleMapper.php" role="test" />
+     <file name="SomeEagerBaseObject.php" role="test" />
+     <file name="SomeEagerBaseObjectMapper.php" role="test" />
+     <file name="SomeLazyBaseObject.php" role="test" />
+     <file name="SomeLazyBaseObjectMapper.php" role="test" />
+    </dir> <!-- /test/Objects -->
+    <dir name="Sql">
+     <dir name="Pdo">
+      <file name="SqliteTest.php" role="test" />
+     </dir> <!-- /test/Sql/Pdo -->
+     <file name="Base.php" role="test" />
+    </dir> <!-- /test/Sql -->
+    <dir name="Unit">
+     <file name="BaseQueryTest.php" role="test" />
+    </dir> <!-- /test/Unit -->
+    <file name="AllTests.php" role="test" />
+    <file name="Autoload.php" role="test" />
+    <file name="bootstrap.php" role="test" />
+    <file name="QueryTest.php" role="test" />
    </dir> <!-- /test -->
    <file name="LICENSE" role="doc" />
   </dir> <!-- / -->
@@ -132,9 +133,9 @@
  <dependencies>
   <required>
    <php>
-    <min>7.0.0</min>
-    <max>8.0.0alpha1</max>
-    <exclude>8.0.0alpha1</exclude>
+    <min>7.4.0</min>
+    <max>9.0.0alpha1</max>
+    <exclude>9.0.0alpha1</exclude>
    </php>
    <pearinstaller>
     <min>1.7.0</min>
@@ -145,6 +146,7 @@
   <filelist>
    <install as="workflows/ci.yml" name=".github/workflows/ci.yml" />
    <install as="workflows/phpdoc.yml" name=".github/workflows/phpdoc.yml" />
+   <install as="workflows/update-satis.yml" name=".github/workflows/update-satis.yml" />
    <install as="CHANGES" name="doc/Horde/Rdo/CHANGES" />
    <install as="examples/clotho.data.php" name="doc/Horde/Rdo/examples/clotho.data.php" />
    <install as="examples/clotho.mysql.sql" name="doc/Horde/Rdo/examples/clotho.mysql.sql" />
@@ -188,48 +190,28 @@
    <install as="RampageList.php" name="src/RampageList.php" />
    <install as="RampageObject.php" name="src/RampageObject.php" />
    <install as="RdoException.php" name="src/RdoException.php" />
-   <install as="Horde/Rdo/AllTests.php" name="test/Horde/Rdo/AllTests.php" />
-   <install as="Horde/Rdo/Autoload.php" name="test/Horde/Rdo/Autoload.php" />
-   <install as="Horde/Rdo/bootstrap.php" name="test/Horde/Rdo/bootstrap.php" />
-   <install as="Horde/Rdo/fixtures/unit_tests.sql" name="test/Horde/Rdo/fixtures/unit_tests.sql" />
-   <install as="Horde/Rdo/Objects/ManyToManyA.php" name="test/Horde/Rdo/Objects/ManyToManyA.php" />
-   <install as="Horde/Rdo/Objects/ManyToManyAMapper.php" name="test/Horde/Rdo/Objects/ManyToManyAMapper.php" />
-   <install as="Horde/Rdo/Objects/ManyToManyB.php" name="test/Horde/Rdo/Objects/ManyToManyB.php" />
-   <install as="Horde/Rdo/Objects/ManyToManyBMapper.php" name="test/Horde/Rdo/Objects/ManyToManyBMapper.php" />
-   <install as="Horde/Rdo/Objects/RelatedThing.php" name="test/Horde/Rdo/Objects/RelatedThing.php" />
-   <install as="Horde/Rdo/Objects/RelatedThingMapper.php" name="test/Horde/Rdo/Objects/RelatedThingMapper.php" />
-   <install as="Horde/Rdo/Objects/SimpleMapper.php" name="test/Horde/Rdo/Objects/SimpleMapper.php" />
-   <install as="Horde/Rdo/Objects/SomeEagerBaseObject.php" name="test/Horde/Rdo/Objects/SomeEagerBaseObject.php" />
-   <install as="Horde/Rdo/Objects/SomeEagerBaseObjectMapper.php" name="test/Horde/Rdo/Objects/SomeEagerBaseObjectMapper.php" />
-   <install as="Horde/Rdo/Objects/SomeLazyBaseObject.php" name="test/Horde/Rdo/Objects/SomeLazyBaseObject.php" />
-   <install as="Horde/Rdo/Objects/SomeLazyBaseObjectMapper.php" name="test/Horde/Rdo/Objects/SomeLazyBaseObjectMapper.php" />
-   <install as="Horde/Rdo/QueryTest.php" name="test/Horde/Rdo/QueryTest.php" />
-   <install as="Horde/Rdo/Sql/Base.php" name="test/Horde/Rdo/Sql/Base.php" />
-   <install as="Horde/Rdo/Sql/Pdo/SqliteTest.php" name="test/Horde/Rdo/Sql/Pdo/SqliteTest.php" />
+   <install as="AllTests.php" name="test/AllTests.php" />
+   <install as="Autoload.php" name="test/Autoload.php" />
+   <install as="bootstrap.php" name="test/bootstrap.php" />
+   <install as="fixtures/unit_tests.sql" name="test/fixtures/unit_tests.sql" />
+   <install as="Objects/ManyToManyA.php" name="test/Objects/ManyToManyA.php" />
+   <install as="Objects/ManyToManyAMapper.php" name="test/Objects/ManyToManyAMapper.php" />
+   <install as="Objects/ManyToManyB.php" name="test/Objects/ManyToManyB.php" />
+   <install as="Objects/ManyToManyBMapper.php" name="test/Objects/ManyToManyBMapper.php" />
+   <install as="Objects/RelatedThing.php" name="test/Objects/RelatedThing.php" />
+   <install as="Objects/RelatedThingMapper.php" name="test/Objects/RelatedThingMapper.php" />
+   <install as="Objects/SimpleMapper.php" name="test/Objects/SimpleMapper.php" />
+   <install as="Objects/SomeEagerBaseObject.php" name="test/Objects/SomeEagerBaseObject.php" />
+   <install as="Objects/SomeEagerBaseObjectMapper.php" name="test/Objects/SomeEagerBaseObjectMapper.php" />
+   <install as="Objects/SomeLazyBaseObject.php" name="test/Objects/SomeLazyBaseObject.php" />
+   <install as="Objects/SomeLazyBaseObjectMapper.php" name="test/Objects/SomeLazyBaseObjectMapper.php" />
+   <install as="QueryTest.php" name="test/QueryTest.php" />
+   <install as="Sql/Base.php" name="test/Sql/Base.php" />
+   <install as="Sql/Pdo/SqliteTest.php" name="test/Sql/Pdo/SqliteTest.php" />
+   <install as="Unit/BaseQueryTest.php" name="test/Unit/BaseQueryTest.php" />
   </filelist>
  </phprelease>
  <changelog>
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
   <release>
    <version>
     <release>0.3.0</release>
@@ -557,9 +539,10 @@
     <api>alpha</api>
    </stability>
    <date>2021-07-04</date>
-   <license uri="http://www.horde.org/licenses/lgpl21">LGPL-2.1</license>
+   <license uri="http://www.horde.org/licenses/lgpl21">LGPL-2.1-only</license>
    <notes>
-* 
+* [rla] Enable PHP 8.x compat.
+* |+
    </notes>
   </release>
  </changelog>
