@@ -22,6 +22,7 @@
  * @category Horde
  * @package  Rdo
  */
+#[\AllowDynamicProperties]
 abstract class Horde_Rdo_Mapper implements Countable
 {
     /**

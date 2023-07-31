@@ -13,6 +13,7 @@
  *
  * @property-read $sortby
  */
+#[\AllowDynamicProperties]
 class Horde_Rdo_Query
 {
     /**
