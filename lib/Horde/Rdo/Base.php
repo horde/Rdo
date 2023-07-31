@@ -159,6 +159,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
      *
      * @see __get()
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($field)
     {
         return $this->__get($field);
@@ -189,6 +190,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
      *
      * @see __set()
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($field, $value)
     {
         $this->__set($field, $value);
@@ -215,6 +217,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
      *
      * @see __isset()
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($field)
     {
         return $this->__isset($field);
@@ -238,6 +241,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
      *
      * @see __unset()
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($field)
     {
         $this->__unset($field);
@@ -261,7 +265,8 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
      *
      * @return Horde_Rdo_Iterator The Iterator instance.
      */
-    public function getIterator()
+    #[\ReturnTypeWillChange]
+     public function getIterator()
     {
         return new Horde_Rdo_Iterator($this);
     }

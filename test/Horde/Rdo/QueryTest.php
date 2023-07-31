@@ -13,7 +13,7 @@ class Horde_Rdo_QueryTest extends Horde_Test_Case
     protected $db;
     protected $mapper;
 
-    public function setUp()
+    public function setUp(): void
     {
         $factory_db = new Horde_Test_Factory_Db();
         $this->db = $factory_db->create();

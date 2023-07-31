@@ -122,6 +122,7 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
     /**
      * Implementation of the rewind() method for iterator.
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         if ($this->_result) {
@@ -140,6 +141,7 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
      *
      * @return mixed The current row, or null if no rows.
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if (is_null($this->_result)) {
@@ -153,6 +155,7 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
      *
      * @return mixed The current row number (starts at 0), or NULL if no rows
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         if (is_null($this->_result)) {
@@ -167,6 +170,7 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
      * @return Horde_Rdo_Base|null The next Rdo object in the set or
      * null if no more results.
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         if (is_null($this->_result)) {
@@ -200,6 +204,7 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
      *
      * @return boolean  Whether or not an offset exists.
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         $query = Horde_Rdo_Query::create($this->_query);
@@ -214,6 +219,7 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
      *
      * @return Horde_Rdo_Base  An entity object at the offset position or null
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         $query = Horde_Rdo_Query::create($this->_query);
@@ -232,6 +238,7 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
      * 
      * @return Horde_Rdo_Base  An entity object at the offset position or null
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $item)
     {
         throw new Horde_Rdo_Exception('You cannot add objects to a result set');
@@ -247,6 +254,7 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
      *
      * @return Horde_Rdo_Base  An entity object at the offset position or null
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         throw new Horde_Rdo_Exception('You cannot remove objects from a result set');
@@ -257,6 +265,7 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
      *
      * @return boolean Whether the iteration is valid
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         if (is_null($this->_result)) {
@@ -270,6 +279,7 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
      *
      * @return integer Number of elements in the list
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         if (is_null($this->_count)) {

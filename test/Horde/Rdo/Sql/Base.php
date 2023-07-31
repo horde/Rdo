@@ -65,7 +65,7 @@ class Horde_Rdo_Test_Sql_Base extends Horde_Test_Case
     }
 
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         self::_migrate_sql_rdo(self::$db);
         // read sql file for statements
@@ -202,21 +202,17 @@ class Horde_Rdo_Test_Sql_Base extends Horde_Test_Case
         $this->assertTrue($list[0] instanceof Horde_Rdo_Test_Objects_SomeLazyBaseObject, "return Object for first index in list");
     }
 
-   /**
-    * @expectedException Horde_Rdo_Exception
-    */
     public function testListOffsetSetThrowException()
     {
+        $this->expectException("Horde_Rdo_Exception");
         $list = self::$LazyBaseObjectMapper->find();
         $list[0] = $list[0];
         $this->assertTrue($list[0] instanceof Horde_Rdo_Test_Objects_SomeLazyBaseObject, "Throw exception when trying to set a new element to the list");
     }
 
-   /**
-    * @expectedException Horde_Rdo_Exception
-    */
     public function testListOffsetUnsetThrowException()
     {
+        $this->expectException("Horde_Rdo_Exception");
         $list = self::$LazyBaseObjectMapper->find();
         unset($list[0]);
         $this->assertTrue($list[0] instanceof Horde_Rdo_Test_Objects_SomeLazyBaseObject, "Throw exception when trying to unset an element");
@@ -250,11 +246,10 @@ class Horde_Rdo_Test_Sql_Base extends Horde_Test_Case
         $result = self::$LazyBaseObjectMapper->findOne(1);
         $this->assertEquals(100, $result->lazyRelatedThing->relatedthing_intproperty, "to-one-relations return correct related object when key is found");
     }
-   /**
-    * @expectedException Horde_Rdo_Exception
-    */
+
     public function testLazyToOneRelationThrowsExceptionWhenKeyIsNotFound()
     {
+        $this->expectException("Horde_Rdo_Exception");
         $entity = self::$LazyBaseObjectMapper->findOne(3);
         $this->assertNull($entity->lazyRelatedThing, "lazy to-one-relations throw exception when relation key is not found");
     }
@@ -278,7 +273,7 @@ class Horde_Rdo_Test_Sql_Base extends Horde_Test_Case
     }
 
 
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         if (self::$db) {
             $migration = new Horde_Db_Migration_Base(self::$db);
@@ -293,7 +288,7 @@ class Horde_Rdo_Test_Sql_Base extends Horde_Test_Case
         }
     }
 
-    public function setUp()
+    public function setUp(): void
     {
         if (!self::$db) {
             $this->markTestSkipped('No sqlite extension or no sqlite PDO driver.');
