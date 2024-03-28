@@ -123,7 +123,7 @@ class DefaultList implements ArrayAccess, Iterator, Countable, RampageList
     /**
      * Implementation of the rewind() method for iterator.
      */
-    public function rewind()
+    public function rewind(): void
     {
         if ($this->_result) {
             unset($this->_result);
@@ -168,7 +168,7 @@ class DefaultList implements ArrayAccess, Iterator, Countable, RampageList
      * @return Base|null The next Rdo object in the set or
      * null if no more results.
      */
-    public function next()
+    public function next(): void
     {
         if (is_null($this->_result)) {
             $this->rewind();
@@ -191,7 +191,7 @@ class DefaultList implements ArrayAccess, Iterator, Countable, RampageList
             }
         }
 
-        return $this->_current;
+        // return $this->_current;
     }
 
     /**
@@ -201,7 +201,7 @@ class DefaultList implements ArrayAccess, Iterator, Countable, RampageList
      *
      * @return boolean  Whether or not an offset exists.
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         $query = BaseQuery::create($this->_query);
         $query->limit(1, $offset);
@@ -233,7 +233,7 @@ class DefaultList implements ArrayAccess, Iterator, Countable, RampageList
      * 
      * @return Base  An entity object at the offset position or null
      */
-    public function offsetSet($offset, $item)
+    public function offsetSet($offset, $item): void
     {
         throw new RdoException('You cannot add objects to a result set');
     }
@@ -248,7 +248,7 @@ class DefaultList implements ArrayAccess, Iterator, Countable, RampageList
      *
      * @return Base  An entity object at the offset position or null
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         throw new RdoException('You cannot remove objects from a result set');
     }
@@ -258,7 +258,7 @@ class DefaultList implements ArrayAccess, Iterator, Countable, RampageList
      *
      * @return boolean Whether the iteration is valid
      */
-    public function valid()
+    public function valid(): bool
     {
         if (is_null($this->_result)) {
             $this->rewind();
@@ -271,7 +271,7 @@ class DefaultList implements ArrayAccess, Iterator, Countable, RampageList
      *
      * @return integer Number of elements in the list
      */
-    public function count()
+    public function count(): int
     {
         if (is_null($this->_count)) {
             $this->_count = $this->_mapper->count($this->_query);

@@ -128,7 +128,12 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
             } elseif (!empty($this->{$rel['foreignKey']})) {
                 $this->_fields[$field] = $m->findOne($this->{$rel['foreignKey']});
                 if (empty($this->_fields[$field])) {
-                    throw new Horde_Rdo_Exception('The referenced object with key ' . $this->{$rel['foreignKey']} . ' does not exist. Your data is inconsistent');
+                    throw new Horde_Rdo_Exception(sprintf(
+                        'The referenced object of %s instance with key %s = %s does not exist. Your data is inconsistent',
+                        get_class($this),
+                        $rel['foreignKey'],
+                        $this->{$rel['foreignKey']},
+                    ));
                 }
             } else {
                 $this->_fields[$field] = null;
@@ -189,7 +194,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
      *
      * @see __set()
      */
-    public function offsetSet($field, $value)
+    public function offsetSet($field, $value): void
     {
         $this->__set($field, $value);
     }
@@ -215,7 +220,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
      *
      * @see __isset()
      */
-    public function offsetExists($field)
+    public function offsetExists($field): bool
     {
         return $this->__isset($field);
     }
@@ -238,7 +243,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
      *
      * @see __unset()
      */
-    public function offsetUnset($field)
+    public function offsetUnset($field): void
     {
         $this->__unset($field);
     }
@@ -261,7 +266,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
      *
      * @return Horde_Rdo_Iterator The Iterator instance.
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new Horde_Rdo_Iterator($this);
     }
