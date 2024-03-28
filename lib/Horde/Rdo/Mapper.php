@@ -498,10 +498,7 @@ abstract class Horde_Rdo_Mapper implements Countable
                 // Numerically indexed arrays are assumed to be an array of
                 // primary keys.
                 $query = new Horde_Rdo_Query();
-                $query->combineWith('OR');
-                foreach ($argv[0] as $id) {
-                    $query->addTest($this->primaryKey, '=', $id);
-                }
+                $query->addTest($this->primaryKey, 'IN', $arg);
             } else {
                 $query = $arg;
             }
