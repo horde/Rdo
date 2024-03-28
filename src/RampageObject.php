@@ -410,7 +410,7 @@ class RampageObject implements Rampage
      *
      * @param string $relationship  The relationship key in the mapper
      * @param Rampage $peer  The object to remove from the relation
-     * @return integer  The number of relations affected
+     * @return int  The number of relations affected
      * @throws RdoException
      */
     public function removeRelation(string $relationship, Rampage $peer = null): int
