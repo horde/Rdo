@@ -60,7 +60,7 @@ class DefaultIterator implements Iterator {
     /**
      * Reset to the first key.
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->_valid = (false !== reset($this->_keys));
     }
@@ -89,7 +89,7 @@ class DefaultIterator implements Iterator {
     /**
      * Move to the next key in the iterator.
      */
-    public function next()
+    public function next(): void
     {
         $this->_valid = (false !== next($this->_keys));
     }
@@ -99,7 +99,7 @@ class DefaultIterator implements Iterator {
      *
      * @return boolean Inside array bounds?
      */
-    public function valid()
+    public function valid(): bool
     {
         return $this->_valid;
     }
