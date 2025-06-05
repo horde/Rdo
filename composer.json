@@ -1,5 +1,4 @@
 {
-    "minimum-stability": "dev",
     "name": "horde/rdo",
     "description": "ORM (object relational-mapping) library",
     "type": "library",
@@ -12,13 +11,8 @@
             "role": "lead"
         }
     ],
-    "time": "2022-11-04",
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://horde-satis.maintaina.com"
-        }
-    ],
+    "time": "2025-06-05",
+    "repositories": [],
     "require": {
         "php": "^7.4 || ^8",
         "horde/db": "^3 || dev-FRAMEWORK_6_0",
@@ -39,12 +33,16 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Horde\\Rdo\\Test\\": "test/"
+            "Horde\\Rdo\\Test\\": "test/",
+            "Horde\\Rdo\\Test\\Fixtures\\": "test/fixtures/"
         }
     },
     "config": {
-        "allow-plugins": {
-            "horde/horde-installer-plugin": true
+        "allow-plugins": {}
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-FRAMEWORK_6_0": "3.x-dev"
         }
     }
 }
