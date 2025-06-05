@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2010-2017 Horde LLC (http://www.horde.org/)
  *
@@ -8,20 +9,25 @@
  * @subpackage UnitTests
  * @license    http://www.horde.org/licenses/lgpl21 LGPL 2.1
  */
+
 namespace Horde\Rdo\Sql;
+
 use Horde_Test_Case as TestCase;
-use \Horde_Db_Migration_Base;
+use Horde_Db_Migration_Base;
 use Horde_Rdo;
 use Horde_Rdo_List;
 use Horde_Rdo_Base;
 use Horde\Rdo\Objects\{SomeLazyBaseObjectMapper,
-                        SomeEagerBaseObjectMapper,
-                        ManyToManyAMapper,
-                        ManyToManyBMapper,
-                        RelatedThingMapper,
-                        SomeLazyBaseObject,
-                        RelatedThing};
+    SomeEagerBaseObjectMapper,
+    ManyToManyAMapper,
+    ManyToManyBMapper,
+    RelatedThingMapper,
+    SomeLazyBaseObject,
+    RelatedThing};
 
+/**
+ * @coversNothing
+ */
 class Base extends TestCase
 {
     protected static $db;
@@ -33,14 +39,14 @@ class Base extends TestCase
 
     public function setUp(): void
     {
-       if (!self::$db) {
-            $this->markTestSkipped('No sqlite extension or no sqlite PDO driver.');                               
+        if (!self::$db) {
+            $this->markTestSkipped('No sqlite extension or no sqlite PDO driver.');
         }
 
-       self::$LazyBaseObjectMapper = new SomeLazyBaseObjectMapper(self::$db);
-       self::$EagerBaseObjectMapper = new SomeEagerBaseObjectMapper(self::$db);
-       self::$MtmaMapper = new ManyToManyAMapper(self::$db);
-       self::$MtmbMapper = new ManyToManyBMapper(self::$db);
+        self::$LazyBaseObjectMapper = new SomeLazyBaseObjectMapper(self::$db);
+        self::$EagerBaseObjectMapper = new SomeEagerBaseObjectMapper(self::$db);
+        self::$MtmaMapper = new ManyToManyAMapper(self::$db);
+        self::$MtmbMapper = new ManyToManyBMapper(self::$db);
     }
 
     protected static function _migrate_sql_rdo($db)
@@ -55,7 +61,7 @@ class Base extends TestCase
             }
             if (in_array('test_somelazybaseobjects', $currentTables)) {
                 $migration->dropTable('test_somelazybaseobjects');
-            }    
+            }
             if (in_array('test_relatedthings', $currentTables)) {
                 $migration->dropTable('test_relatedthings');
             }
@@ -68,29 +74,30 @@ class Base extends TestCase
             if (in_array('test_manythrough', $currentTables)) {
                 $migration->dropTable('test_manythrough');
             }
-        } catch (Horde_Db_Exception $e) {        }
+        } catch (Horde_Db_Exception $e) {
+        }
 
-        $t = $migration->createTable('test_someeagerbaseobjects', array('autoincrementKey' => 'baseobject_id'));
+        $t = $migration->createTable('test_someeagerbaseobjects', ['autoincrementKey' => 'baseobject_id']);
         $t->column('relatedthing_id', 'integer');
         $t->column('atextproperty', 'string');
         $t->end();
 
-        $t = $migration->createTable('test_somelazybaseobjects', array('autoincrementKey' => 'baseobject_id'));
+        $t = $migration->createTable('test_somelazybaseobjects', ['autoincrementKey' => 'baseobject_id']);
         $t->column('relatedthing_id', 'integer');
         $t->column('atextproperty', 'string');
         $t->end();
 
-        $t = $migration->createTable('test_relatedthings', array('autoincrementKey' => 'relatedthing_id'));
-        $t->column('relatedthing_textproperty', 'string', array('limit' => 255, 'null' => false));
-        $t->column('relatedthing_intproperty', 'integer', array('null' => false));
+        $t = $migration->createTable('test_relatedthings', ['autoincrementKey' => 'relatedthing_id']);
+        $t->column('relatedthing_textproperty', 'string', ['limit' => 255, 'null' => false]);
+        $t->column('relatedthing_intproperty', 'integer', ['null' => false]);
         $t->end();
 
-        $t = $migration->createTable('test_manytomanya', array('autoincrementKey' => 'a_id'));
-        $t->column('a_intproperty', 'integer', array('null' => false));
+        $t = $migration->createTable('test_manytomanya', ['autoincrementKey' => 'a_id']);
+        $t->column('a_intproperty', 'integer', ['null' => false]);
         $t->end();
 
-        $t = $migration->createTable('test_manytomanyb', array('autoincrementKey' => 'b_id'));
-        $t->column('b_intproperty', 'integer', array('null' => false));
+        $t = $migration->createTable('test_manytomanyb', ['autoincrementKey' => 'b_id']);
+        $t->column('b_intproperty', 'integer', ['null' => false]);
         $t->end();
 
 
@@ -107,7 +114,7 @@ class Base extends TestCase
     {
         self::_migrate_sql_rdo(self::$db);
         // read sql file for statements
-        $statements = array();
+        $statements = [];
         $current_stmt = '';
         $fp = fopen(__DIR__ . '/../fixtures/unit_tests.sql', 'r');
         while ($line = fgets($fp, 8192)) {
@@ -231,7 +238,7 @@ class Base extends TestCase
     public function testListOffsetGetReturnObjectForLast()
     {
         $list = self::$LazyBaseObjectMapper->find();
-        $this->assertTrue($list[$list->count()-1] instanceof SomeLazyBaseObject, "return Object for last index in list");
+        $this->assertTrue($list[$list->count() - 1] instanceof SomeLazyBaseObject, "return Object for last index in list");
     }
 
     public function testListOffsetGetReturnObjectForFirst()
@@ -241,7 +248,7 @@ class Base extends TestCase
     }
 
     public function testListOffsetSetThrowException()
-    {   
+    {
         $this->expectException('Horde_Rdo_Exception');
 
         $list = self::$LazyBaseObjectMapper->find();

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @category Horde
  * @package Rdo
@@ -27,7 +28,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
      *
      * @var array
      */
-    protected $_fields = array();
+    protected $_fields = [];
 
     /**
      * Constructor. Can be called directly by a programmer, or is
@@ -38,7 +39,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
      *
      * @see Horde_Rdo_Mapper::map()
      */
-    public function __construct($fields = array())
+    public function __construct($fields = [])
     {
         $this->setFields($fields);
     }
@@ -75,7 +76,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
         // returns true on every method name, so use method_exists
         // instead.
         if (method_exists($this, $fieldMethod)) {
-            return call_user_func(array($this, $fieldMethod));
+            return call_user_func([$this, $fieldMethod]);
         }
 
         if (isset($this->_fields[$field])) {
@@ -90,8 +91,9 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
             $query = new Horde_Rdo_Query($mapper);
             $query->setFields($field)
                    ->addTest($mapper->primaryKey, '=', $this->{$mapper->primaryKey});
-            list($sql, $params) = $query->getQuery();
-            $this->_fields[$field] = $mapper->adapter->selectValue($sql, $params);;
+            [$sql, $params] = $query->getQuery();
+            $this->_fields[$field] = $mapper->adapter->selectValue($sql, $params);
+            ;
             return $this->_fields[$field];
         } elseif (isset($mapper->lazyRelationships[$field])) {
             $rel = $mapper->lazyRelationships[$field];
@@ -105,9 +107,9 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
             if ($mapper->factory) {
                 $m = $mapper->factory->create($rel['mapper']);
             } else {
-            // @TODO - should be getting this instance from somewhere
-            // else external, and not passing the adapter along
-            // automatically.
+                // @TODO - should be getting this instance from somewhere
+                // else external, and not passing the adapter along
+                // automatically.
                 $m = new $rel['mapper']($mapper->adapter);
             }
         } else {
@@ -120,40 +122,40 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
         // Based on the kind of relationship, fetch the appropriate
         // objects and fill the cache.
         switch ($rel['type']) {
-        case Horde_Rdo::ONE_TO_ONE:
-        case Horde_Rdo::MANY_TO_ONE:
-            if (isset($rel['query'])) {
-                $query = $this->_fillPlaceholders($rel['query']);
-                $this->_fields[$field] = $m->findOne($query);
-            } elseif (!empty($this->{$rel['foreignKey']})) {
-                $this->_fields[$field] = $m->findOne($this->{$rel['foreignKey']});
-                if (empty($this->_fields[$field])) {
-                    throw new Horde_Rdo_Exception(sprintf(
-                        'The referenced object of %s instance with key %s = %s does not exist. Your data is inconsistent',
-                        get_class($this),
-                        $rel['foreignKey'],
-                        $this->{$rel['foreignKey']},
-                    ));
+            case Horde_Rdo::ONE_TO_ONE:
+            case Horde_Rdo::MANY_TO_ONE:
+                if (isset($rel['query'])) {
+                    $query = $this->_fillPlaceholders($rel['query']);
+                    $this->_fields[$field] = $m->findOne($query);
+                } elseif (!empty($this->{$rel['foreignKey']})) {
+                    $this->_fields[$field] = $m->findOne($this->{$rel['foreignKey']});
+                    if (empty($this->_fields[$field])) {
+                        throw new Horde_Rdo_Exception(sprintf(
+                            'The referenced object of %s instance with key %s = %s does not exist. Your data is inconsistent',
+                            get_class($this),
+                            $rel['foreignKey'],
+                            $this->{$rel['foreignKey']},
+                        ));
+                    }
+                } else {
+                    $this->_fields[$field] = null;
                 }
-            } else {
-                $this->_fields[$field] = null;
-            }
-            break;
+                break;
 
-        case Horde_Rdo::ONE_TO_MANY:
-            $this->_fields[$field] = $m->find(array($rel['foreignKey'] => $this->{$rel['foreignKey']}));
-            break;
+            case Horde_Rdo::ONE_TO_MANY:
+                $this->_fields[$field] = $m->find([$rel['foreignKey'] => $this->{$rel['foreignKey']}]);
+                break;
 
-        case Horde_Rdo::MANY_TO_MANY:
-            $key = $mapper->primaryKey;
-            $query = new Horde_Rdo_Query();
-            $on = isset($rel['on']) ? $rel['on'] : $m->primaryKey;
-            $query->addRelationship($field, array('mapper' => $mapper,
-                                                  'table' => $rel['through'],
-                                                  'type' => Horde_Rdo::MANY_TO_MANY,
-                                                  'query' => array("$m->table.$on" => new Horde_Rdo_Query_Literal($rel['through'] . '.' . $on), $key => $this->$key)));
-            $this->_fields[$field] = $m->find($query);
-            break;
+            case Horde_Rdo::MANY_TO_MANY:
+                $key = $mapper->primaryKey;
+                $query = new Horde_Rdo_Query();
+                $on = $rel['on'] ?? $m->primaryKey;
+                $query->addRelationship($field, ['mapper' => $mapper,
+                    'table' => $rel['through'],
+                    'type' => Horde_Rdo::MANY_TO_MANY,
+                    'query' => ["$m->table.$on" => new Horde_Rdo_Query_Literal($rel['through'] . '.' . $on), $key => $this->$key]]);
+                $this->_fields[$field] = $m->find($query);
+                break;
         }
 
         return $this->_fields[$field];
@@ -183,7 +185,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
         // returns true on every method name, so use method_exists
         // instead.
         if (method_exists($this, $fieldMethod)) {
-            return call_user_func(array($this, $fieldMethod), $value);
+            return call_user_func([$this, $fieldMethod], $value);
         }
 
         $this->_fields[$field] = $value;
@@ -255,7 +257,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
      *
      * @see Horde_Rdo_Mapper::map()
      */
-    public function setFields($fields = array())
+    public function setFields($fields = [])
     {
         $this->_fields = $fields;
     }
@@ -351,7 +353,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
      * @return boolean  True if related.
      * @throws Horde_Rdo_Exception
      */
-    public function hasRelation($relationship, Horde_Rdo_Base $peer = null)
+    public function hasRelation($relationship, ?Horde_Rdo_Base $peer = null)
     {
         $mapper = $this->getMapper();
         if (isset($mapper->relationships[$relationship])) {
@@ -365,26 +367,26 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
         $result = $this->$relationship;
 
         switch ($rel['type']) {
-        case Horde_Rdo::ONE_TO_ONE:
-        case Horde_Rdo::MANY_TO_ONE:
-            if (empty($peer) || empty($result)) {
-                return (bool) $result;
-            }
-            $key = $result->mapper->primaryKey;
-            return $result->$key == $peer->$key;
-
-        case Horde_Rdo::ONE_TO_MANY:
-        case Horde_Rdo::MANY_TO_MANY:
-            if (empty($peer)) {
-                return (bool) count($result);
-            }
-            $key = $peer->mapper->primaryKey;
-            foreach ($result as $item) {
-                if ($item->$key == $peer->$key) {
-                    return true;
+            case Horde_Rdo::ONE_TO_ONE:
+            case Horde_Rdo::MANY_TO_ONE:
+                if (empty($peer) || empty($result)) {
+                    return (bool) $result;
                 }
-            }
-            break;
+                $key = $result->mapper->primaryKey;
+                return $result->$key == $peer->$key;
+
+            case Horde_Rdo::ONE_TO_MANY:
+            case Horde_Rdo::MANY_TO_MANY:
+                if (empty($peer)) {
+                    return (bool) count($result);
+                }
+                $key = $peer->mapper->primaryKey;
+                foreach ($result as $item) {
+                    if ($item->$key == $peer->$key) {
+                        return true;
+                    }
+                }
+                break;
         }
 
         return false;
@@ -406,7 +408,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
      * @return integer  The number of relations affected
      * @throws Horde_Rdo_Exception
      */
-    public function removeRelation($relationship, Horde_Rdo_Base $peer = null)
+    public function removeRelation($relationship, ?Horde_Rdo_Base $peer = null)
     {
         return $this->mapper->removeRelation($relationship, $this, $peer);
     }
@@ -467,7 +469,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
      */
     public function toArray($lazy = false, $relationships = false)
     {
-        $array = array();
+        $array = [];
 
         $m = $this->getMapper();
 

@@ -1,10 +1,14 @@
 <?php
+
 /**
  * @category Horde
  * @package  Rdo
  */
+
 namespace Horde\Rdo;
-use \Horde_Exception_Wrapped;
+
+use Horde_Exception_Wrapped;
+
 /**
  * @author   Chuck Hagenbuch <chuck@horde.org>
  * @author   Ralf Lang <lang@b1-systems.de>
@@ -12,6 +16,4 @@ use \Horde_Exception_Wrapped;
  * @category Horde
  * @package  Rdo
  */
-class RdoException extends Horde_Exception_Wrapped
-{
-}
+class RdoException extends Horde_Exception_Wrapped {}

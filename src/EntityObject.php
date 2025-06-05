@@ -1,10 +1,13 @@
 <?php
+
 /**
  * Base implementation of an entity
- * 
+ *
  * This is the default entity if no overridden type exists
  */
+
 namespace Horde\Rdo;
+
 /**
  * @author   Chuck Hagenbuch <chuck@horde.org>
  * @author   Ralf Lang <lang@b1-systems.de>
@@ -12,7 +15,4 @@ namespace Horde\Rdo;
  * @category Horde
  * @package  Rdo
  */
-class EntityObject implements Entity
-{
-    
-}
+class EntityObject implements Entity {}

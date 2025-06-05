@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Represent a single query or a tree of many query elements uniformly to
  * clients.
@@ -28,7 +29,7 @@ class Horde_Rdo_Query
     /**
      * @var array
      */
-    public $fields = array('*');
+    public $fields = ['*'];
 
     /**
      * @var boolean
@@ -38,12 +39,12 @@ class Horde_Rdo_Query
     /**
      * @var array
      */
-    public $tests = array();
+    public $tests = [];
 
     /**
      * @var array
      */
-    public $relationships = array();
+    public $relationships = [];
 
     /**
      * @var integer
@@ -58,7 +59,7 @@ class Horde_Rdo_Query
     /**
      * @var array
      */
-    protected $_sortby = array();
+    protected $_sortby = [];
 
     /**
      * @var integer
@@ -68,7 +69,7 @@ class Horde_Rdo_Query
     /**
      * @var array
      */
-    protected $_aliases = array();
+    protected $_aliases = [];
 
     /**
      * Turn any of the acceptable query shorthands into a full
@@ -153,26 +154,26 @@ class Horde_Rdo_Query
             $m->tableAlias = $this->_alias($m->table);
             $this->addFields($m->fields, $m->tableAlias . '.@');
 
-            $args = array('mapper' => $m,
-                          'type' => $rel['type']);
+            $args = ['mapper' => $m,
+                'type' => $rel['type']];
 
             switch ($rel['type']) {
-            case Horde_Rdo::ONE_TO_ONE:
-            case Horde_Rdo::MANY_TO_ONE:
-                if (isset($rel['query'])) {
-                    $args['query'] = $this->_fillJoinPlaceholders($m, $mapper, $rel['query']);
-                } else {
-                    $args['query'] = array($mapper->table . '.' . $rel['foreignKey'] => new Horde_Rdo_Query_Literal($m->table . '.' . $m->tableDefinition->getPrimaryKey()));
-                }
-                if (isset($rel['join_type'])) {
-                    $args['join_type'] = $rel['join_type'];
-                }
-                $this->addRelationship($relationship, $args);
-                break;
+                case Horde_Rdo::ONE_TO_ONE:
+                case Horde_Rdo::MANY_TO_ONE:
+                    if (isset($rel['query'])) {
+                        $args['query'] = $this->_fillJoinPlaceholders($m, $mapper, $rel['query']);
+                    } else {
+                        $args['query'] = [$mapper->table . '.' . $rel['foreignKey'] => new Horde_Rdo_Query_Literal($m->table . '.' . $m->tableDefinition->getPrimaryKey())];
+                    }
+                    if (isset($rel['join_type'])) {
+                        $args['join_type'] = $rel['join_type'];
+                    }
+                    $this->addRelationship($relationship, $args);
+                    break;
 
-            case Horde_Rdo::ONE_TO_MANY:
-            case Horde_Rdo::MANY_TO_MANY:
-                //@TODO
+                case Horde_Rdo::ONE_TO_MANY:
+                case Horde_Rdo::MANY_TO_MANY:
+                    //@TODO
             }
         }
 
@@ -203,10 +204,10 @@ class Horde_Rdo_Query
     public function setFields($fields, $fieldPrefix = null)
     {
         if (!is_array($fields)) {
-            $fields = array($fields);
+            $fields = [$fields];
         }
         if (!is_null($fieldPrefix)) {
-            array_walk($fields, array($this, '_prefix'), $fieldPrefix);
+            array_walk($fields, [$this, '_prefix'], $fieldPrefix);
         }
         $this->fields = $fields;
         return $this;
@@ -223,7 +224,7 @@ class Horde_Rdo_Query
     public function addFields($fields, $fieldPrefix = null)
     {
         if (!is_null($fieldPrefix)) {
-            array_walk($fields, array($this, '_prefix'), $fieldPrefix);
+            array_walk($fields, [$this, '_prefix'], $fieldPrefix);
         }
         $this->fields = array_merge($this->fields, $fields);
     }
@@ -241,9 +242,9 @@ class Horde_Rdo_Query
      */
     public function addTest($field, $test, $value)
     {
-        $this->tests[] = array('field' => $field,
-                               'test'  => $test,
-                               'value' => $value);
+        $this->tests[] = ['field' => $field,
+            'test'  => $test,
+            'value' => $value];
         return $this;
     }
 
@@ -287,7 +288,7 @@ class Horde_Rdo_Query
         if (isset($args['join_type']) &&
             !in_array(
                 Horde_String::upper($args['join_type']),
-                array('INNER JOIN', 'LEFT JOIN')
+                ['INNER JOIN', 'LEFT JOIN']
             )) {
             unset($args['join_type']);
         }
@@ -296,14 +297,14 @@ class Horde_Rdo_Query
         }
         if (!isset($args['join_type'])) {
             switch ($args['type']) {
-            case Horde_Rdo::ONE_TO_ONE:
-            case Horde_Rdo::MANY_TO_ONE:
-            case Horde_Rdo::MANY_TO_MANY:
-                $args['join_type'] = 'INNER JOIN';
-                break;
+                case Horde_Rdo::ONE_TO_ONE:
+                case Horde_Rdo::MANY_TO_ONE:
+                case Horde_Rdo::MANY_TO_MANY:
+                    $args['join_type'] = 'INNER JOIN';
+                    break;
 
-            default:
-                $args['join_type'] = 'LEFT JOIN';
+                default:
+                    $args['join_type'] = 'LEFT JOIN';
             }
         }
 
@@ -326,7 +327,7 @@ class Horde_Rdo_Query
      */
     public function clearSort()
     {
-        $this->_sortby = array();
+        $this->_sortby = [];
         return $this;
     }
 
@@ -351,12 +352,12 @@ class Horde_Rdo_Query
     public function __get($key)
     {
         switch ($key) {
-        case 'sortby':
-            if (!$this->_sortby && $this->mapper->defaultSort) {
-                // Add in any default sort values, if none are already set.
-                $this->sortBy($this->mapper->defaultSort);
-            }
-            return $this->_sortby;
+            case 'sortby':
+                if (!$this->_sortby && $this->mapper->defaultSort) {
+                    // Add in any default sort values, if none are already set.
+                    $this->sortBy($this->mapper->defaultSort);
+                }
+                return $this->_sortby;
         }
 
         throw new InvalidArgumentException('Undefined property ' . $key);
@@ -370,7 +371,7 @@ class Horde_Rdo_Query
      */
     public function getQuery()
     {
-        $bindParams = array();
+        $bindParams = [];
         $sql = '';
 
         $this->_select($sql, $bindParams);
@@ -380,20 +381,20 @@ class Horde_Rdo_Query
         $this->_orderBy($sql, $bindParams);
         $this->_limit($sql, $bindParams);
 
-        return array($sql, $bindParams);
+        return [$sql, $bindParams];
     }
 
     /**
      */
     protected function _select(&$sql, &$bindParams)
     {
-        $fields = array();
+        $fields = [];
         foreach ($this->fields as $field) {
             $parts = explode('.@', $field, 2);
             if (count($parts) == 1) {
                 $fields[] = $field;
             } else {
-                list($tableName, $columnName) = $parts;
+                [$tableName, $columnName] = $parts;
                 if (isset($this->_aliases[$tableName])) {
                     $tableName = $this->_aliases[$tableName];
                 }
@@ -420,12 +421,12 @@ class Horde_Rdo_Query
     protected function _join(&$sql, &$bindParams)
     {
         foreach ($this->relationships as $relationship) {
-            $relsql = array();
+            $relsql = [];
             $table = $relationship['table'];
             $tableAlias = $relationship['tableAlias'];
             foreach ($relationship['query'] as $key => $value) {
                 if ($value instanceof Horde_Rdo_Query_Literal) {
-                    $relsql[] = $key . ' = ' . str_replace("{$table}.", "{$tableAlias}.", (string)$value);
+                    $relsql[] = $key . ' = ' . str_replace("{$table}.", "{$tableAlias}.", (string) $value);
                 } else {
                     $relsql[] = $key . ' = ?';
                     $bindParams[] = $value;
@@ -440,10 +441,10 @@ class Horde_Rdo_Query
      */
     protected function _where(&$sql, &$bindParams)
     {
-        $clauses = array();
+        $clauses = [];
         foreach ($this->tests as $test) {
             if (strpos($test['field'], '@') !== false) {
-                list($rel, $field) = explode('@', $test['field']);
+                [$rel, $field] = explode('@', $test['field']);
                 if (!isset($this->relationships[$rel])) {
                     continue;
                 }
@@ -453,7 +454,7 @@ class Horde_Rdo_Query
             }
 
             if ($test['value'] instanceof Horde_Rdo_Query_Literal) {
-                $clauses[] = $clause . ' ' . (string)$test['value'];
+                $clauses[] = $clause . ' ' . (string) $test['value'];
             } else {
                 if (($test['test'] == 'IN' || $test['test'] == 'NOT IN') && is_array($test['value'])) {
                     $clauses[] = $clause . '(?' . str_repeat(',?', count($test['value']) - 1) . ')';
@@ -478,7 +479,7 @@ class Horde_Rdo_Query
             $sql .= ' ORDER BY';
             foreach ($this->sortby as $sort) {
                 if (strpos($sort, '@') !== false) {
-                    list($rel, $field) = explode('@', $sort);
+                    [$rel, $field] = explode('@', $sort);
                     if (!isset($this->relationships[$rel])) {
                         continue;
                     }
@@ -497,7 +498,7 @@ class Horde_Rdo_Query
     protected function _limit(&$sql, &$bindParams)
     {
         if ($this->limit) {
-            $opts = array('limit' => $this->limit, 'offset' => $this->limitOffset);
+            $opts = ['limit' => $this->limit, 'offset' => $this->limitOffset];
             $sql = $this->mapper->adapter->addLimitOffset($sql, $opts);
         }
     }
@@ -533,7 +534,7 @@ class Horde_Rdo_Query
      */
     protected function _fillJoinPlaceholders($m1, $m2, $query)
     {
-        $q = array();
+        $q = [];
         foreach (array_keys($query) as $field) {
             $value = $query[$field];
             if (preg_match('/^@(.*)@$/', $value, $matches)) {

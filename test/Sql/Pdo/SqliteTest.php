@@ -1,12 +1,15 @@
 <?php
+
 /**
  * Prepare the test setup.
  */
+
 namespace Horde\Rdo\Sql;
-use \Pdo;
-use \Horde_Test_Factory_Db;
-use \Horde_Db_Migration_Base;
-use \Horde_Test_Exception;
+
+use Pdo;
+use Horde_Test_Factory_Db;
+use Horde_Db_Migration_Base;
+use Horde_Test_Exception;
 
 require_once __DIR__ . '/../Base.php';
 
@@ -18,6 +21,7 @@ require_once __DIR__ . '/../Base.php';
  * @package    Rdo
  * @subpackage UnitTests
  * @license    http://www.horde.org/licenses/lgpl21 LGPL 2.1
+ * @coversNothing
  */
 class SqliteTest extends Base
 {
@@ -28,6 +32,7 @@ class SqliteTest extends Base
         try {
             self::$db = $factory_db->create();
             parent::setUpBeforeClass();
-        } catch (Horde_Test_Exception $e) {}
+        } catch (Horde_Test_Exception $e) {
+        }
     }
 }

@@ -1,10 +1,13 @@
 <?php
+
 /**
  * Rampage is a data holding object without much behaviour
  * It is the default result of a request to Reader
- * 
+ *
  */
+
 namespace Horde\Rdo;
+
 /**
  * @author   Chuck Hagenbuch <chuck@horde.org>
  * @author   Ralf Lang <lang@b1-systems.de>
@@ -77,7 +80,7 @@ class RampageObject implements Rampage
         // returns true on every method name, so use method_exists
         // instead.
         if (method_exists($this, $fieldMethod)) {
-            return call_user_func(array($this, $fieldMethod));
+            return call_user_func([$this, $fieldMethod]);
         }
 
         if (isset($this->fields[$field])) {
@@ -92,8 +95,9 @@ class RampageObject implements Rampage
             $query = new BaseQuery($mapper);
             $query->setFields($field)
                    ->addTest($mapper->primaryKey, '=', $this->{$mapper->primaryKey});
-            list($sql, $params) = $query->getQuery();
-            $this->fields[$field] = $mapper->adapter->selectValue($sql, $params);;
+            [$sql, $params] = $query->getQuery();
+            $this->fields[$field] = $mapper->adapter->selectValue($sql, $params);
+            ;
             return $this->fields[$field];
         } elseif (isset($mapper->lazyRelationships[$field])) {
             $rel = $mapper->lazyRelationships[$field];
@@ -107,9 +111,9 @@ class RampageObject implements Rampage
             if ($mapper->factory) {
                 $m = $mapper->factory->create($rel['mapper']);
             } else {
-            // @TODO - should be getting this instance from somewhere
-            // else external, and not passing the adapter along
-            // automatically.
+                // @TODO - should be getting this instance from somewhere
+                // else external, and not passing the adapter along
+                // automatically.
                 $m = new $rel['mapper']($mapper->adapter);
             }
         } else {
@@ -122,35 +126,35 @@ class RampageObject implements Rampage
         // Based on the kind of relationship, fetch the appropriate
         // objects and fill the cache.
         switch ($rel['type']) {
-        case Constants::ONE_TO_ONE:
-        case Constants::MANY_TO_ONE:
-            if (isset($rel['query'])) {
-                $query = $this->_fillPlaceholders($rel['query']);
-                $this->fields[$field] = $m->findOne($query);
-            } elseif (!empty($this->{$rel['foreignKey']})) {
-                $this->fields[$field] = $m->findOne($this->{$rel['foreignKey']});
-                if (empty($this->fields[$field])) {
-                    throw new RdoException('The referenced object with key ' . $this->{$rel['foreignKey']} . ' does not exist. Your data is inconsistent');
+            case Constants::ONE_TO_ONE:
+            case Constants::MANY_TO_ONE:
+                if (isset($rel['query'])) {
+                    $query = $this->_fillPlaceholders($rel['query']);
+                    $this->fields[$field] = $m->findOne($query);
+                } elseif (!empty($this->{$rel['foreignKey']})) {
+                    $this->fields[$field] = $m->findOne($this->{$rel['foreignKey']});
+                    if (empty($this->fields[$field])) {
+                        throw new RdoException('The referenced object with key ' . $this->{$rel['foreignKey']} . ' does not exist. Your data is inconsistent');
+                    }
+                } else {
+                    $this->fields[$field] = null;
                 }
-            } else {
-                $this->fields[$field] = null;
-            }
-            break;
+                break;
 
-        case Constants::ONE_TO_MANY:
-            $this->fields[$field] = $m->find(array($rel['foreignKey'] => $this->{$rel['foreignKey']}));
-            break;
+            case Constants::ONE_TO_MANY:
+                $this->fields[$field] = $m->find([$rel['foreignKey'] => $this->{$rel['foreignKey']}]);
+                break;
 
-        case Constants::MANY_TO_MANY:
-            $key = $mapper->primaryKey;
-            $query = new BaseQuery();
-            $on = isset($rel['on']) ? $rel['on'] : $m->primaryKey;
-            $query->addRelationship($field, array('mapper' => $mapper,
-                                                  'table' => $rel['through'],
-                                                  'type' => Constants::MANY_TO_MANY,
-                                                  'query' => array("$m->table.$on" => new BaseQuery\Literal($rel['through'] . '.' . $on), $key => $this->$key)));
-            $this->fields[$field] = $m->find($query);
-            break;
+            case Constants::MANY_TO_MANY:
+                $key = $mapper->primaryKey;
+                $query = new BaseQuery();
+                $on = $rel['on'] ?? $m->primaryKey;
+                $query->addRelationship($field, ['mapper' => $mapper,
+                    'table' => $rel['through'],
+                    'type' => Constants::MANY_TO_MANY,
+                    'query' => ["$m->table.$on" => new BaseQuery\Literal($rel['through'] . '.' . $on), $key => $this->$key]]);
+                $this->fields[$field] = $m->find($query);
+                break;
         }
 
         return $this->fields[$field];
@@ -180,7 +184,7 @@ class RampageObject implements Rampage
         // returns true on every method name, so use method_exists
         // instead.
         if (method_exists($this, $fieldMethod)) {
-            return call_user_func(array($this, $fieldMethod), $value);
+            return call_user_func([$this, $fieldMethod], $value);
         }
 
         $this->fields[$field] = $value;
@@ -270,7 +274,7 @@ class RampageObject implements Rampage
 
     /**
      * Change the default iterator
-     * 
+     *
      * @since Rdo 3.0
      */
     public function setIterator(string $iterator = '')
@@ -358,7 +362,7 @@ class RampageObject implements Rampage
      * @return boolean  True if related.
      * @throws RdoException
      */
-    public function hasRelation($relationship, Rampage $peer = null)
+    public function hasRelation($relationship, ?Rampage $peer = null)
     {
         $mapper = $this->getMapper();
         if (isset($mapper->relationships[$relationship])) {
@@ -372,26 +376,26 @@ class RampageObject implements Rampage
         $result = $this->$relationship;
 
         switch ($rel['type']) {
-        case Constants::ONE_TO_ONE:
-        case Constants::MANY_TO_ONE:
-            if (empty($peer) || empty($result)) {
-                return (bool) $result;
-            }
-            $key = $result->mapper->primaryKey;
-            return $result->$key == $peer->$key;
-
-        case Constants::ONE_TO_MANY:
-        case Constants::MANY_TO_MANY:
-            if (empty($peer)) {
-                return (bool) count($result);
-            }
-            $key = $peer->mapper->primaryKey;
-            foreach ($result as $item) {
-                if ($item->$key == $peer->$key) {
-                    return true;
+            case Constants::ONE_TO_ONE:
+            case Constants::MANY_TO_ONE:
+                if (empty($peer) || empty($result)) {
+                    return (bool) $result;
                 }
-            }
-            break;
+                $key = $result->mapper->primaryKey;
+                return $result->$key == $peer->$key;
+
+            case Constants::ONE_TO_MANY:
+            case Constants::MANY_TO_MANY:
+                if (empty($peer)) {
+                    return (bool) count($result);
+                }
+                $key = $peer->mapper->primaryKey;
+                foreach ($result as $item) {
+                    if ($item->$key == $peer->$key) {
+                        return true;
+                    }
+                }
+                break;
         }
 
         return false;
@@ -413,7 +417,7 @@ class RampageObject implements Rampage
      * @return int  The number of relations affected
      * @throws RdoException
      */
-    public function removeRelation(string $relationship, Rampage $peer = null): int
+    public function removeRelation(string $relationship, ?Rampage $peer = null): int
     {
         return $this->mapper->removeRelation($relationship, $this, $peer);
     }
@@ -482,5 +486,5 @@ class RampageObject implements Rampage
 
         return $array;
     }
-    
+
 }

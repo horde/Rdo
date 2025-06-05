@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Rampage Factory: Creator of entities and mappers
  *
@@ -9,8 +10,10 @@
  * @author   Ralf Lang <lang@b1-systems.de>
  * @license  http://www.horde.org/licenses/lgpl21 LGPL
  */
+
 namespace Horde\Rdo;
-use \Horde_Db_Adapter;
+
+use Horde_Db_Adapter;
 
 /**
  * The Factory is a caching root object for Mapper instances
@@ -25,7 +28,7 @@ class Factory
      * The list of already loaded Mapper classes
      * @var array
      */
-    protected $_mappers = array();
+    protected $_mappers = [];
 
     /**
      * The database connection to pass to the Mapper classes
@@ -63,7 +66,7 @@ class Factory
      * @return Mapper  The Mapper descendant instance.
      * @throws RdoException
      */
-    public function create($class, Horde_Db_Adapter $adapter = null)
+    public function create($class, ?Horde_Db_Adapter $adapter = null)
     {
         if (!empty($this->_mappers[$class])) {
             return $this->_mappers[$class];

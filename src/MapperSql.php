@@ -1,13 +1,17 @@
 <?php
+
 /**
  * @category Horde
  * @package  Rdo
  */
+
 namespace Horde\Rdo;
-use \Horde_Db_Adapter;
-use \Countable;
-use \Horde_Db_Exception;
-use \Horde_Support_Inflector;
+
+use Horde_Db_Adapter;
+use Countable;
+use Horde_Db_Exception;
+use Horde_Support_Inflector;
+
 /**
  * Rdo Mapper class.
  *
@@ -60,14 +64,14 @@ class MapperSql implements Mapper, Countable
      *
      * @var array
      */
-    protected $_lazyFields = array();
+    protected $_lazyFields = [];
 
     /**
      * Relationships for this entity.
      *
      * @var array
      */
-    protected $_relationships = array();
+    protected $_relationships = [];
 
     /**
      * Relationships that should only be read from the database when
@@ -75,7 +79,7 @@ class MapperSql implements Mapper, Countable
      *
      * @var array
      */
-    protected $_lazyRelationships = array();
+    protected $_lazyRelationships = [];
 
     /**
      * Default sorting rule to use for all queries made with this mapper. This
@@ -104,7 +108,7 @@ class MapperSql implements Mapper, Countable
      * @param Factory $factory  A Factory instance or null
      * @return Mapper  this mapper
      */
-    public function setFactory(Factory $factory = null)
+    public function setFactory(?Factory $factory = null)
     {
         $this->_factory = $factory;
         return $this;
@@ -148,32 +152,32 @@ class MapperSql implements Mapper, Countable
     public function __get($key)
     {
         switch ($key) {
-        case 'inflector':
-            $this->inflector = new Horde_Support_Inflector();
-            return $this->inflector;
+            case 'inflector':
+                $this->inflector = new Horde_Support_Inflector();
+                return $this->inflector;
 
-        case 'primaryKey':
-            $this->primaryKey = (string)$this->tableDefinition->getPrimaryKey();
-            return $this->primaryKey;
+            case 'primaryKey':
+                $this->primaryKey = (string) $this->tableDefinition->getPrimaryKey();
+                return $this->primaryKey;
 
-        case 'table':
-            $this->table = !empty($this->_table) ? $this->_table : $this->mapperToTable();
-            return $this->table;
+            case 'table':
+                $this->table = !empty($this->_table) ? $this->_table : $this->mapperToTable();
+                return $this->table;
 
-        case 'tableDefinition':
-            $this->tableDefinition = $this->adapter->table($this->table);
-            return $this->tableDefinition;
+            case 'tableDefinition':
+                $this->tableDefinition = $this->adapter->table($this->table);
+                return $this->tableDefinition;
 
-        case 'fields':
-            $this->fields = array_diff($this->tableDefinition->getColumnNames(), $this->_lazyFields);
-            return $this->fields;
+            case 'fields':
+                $this->fields = array_diff($this->tableDefinition->getColumnNames(), $this->_lazyFields);
+                return $this->fields;
 
-        case 'lazyFields':
-        case 'relationships':
-        case 'lazyRelationships':
-        case 'factory':
-        case 'defaultSort':
-            return $this->{'_' . $key};
+            case 'lazyFields':
+            case 'relationships':
+            case 'lazyRelationships':
+            case 'factory':
+            case 'defaultSort':
+                return $this->{'_' . $key};
         }
 
         return null;
@@ -189,7 +193,7 @@ class MapperSql implements Mapper, Countable
      * @return Base An instance of $this->_classname with $fields
      * as initial data.
      */
-    public function map($fields = array())
+    public function map($fields = [])
     {
         // Guess a classname if one isn't explicitly set.
         if (!$this->_classname) {
@@ -204,7 +208,7 @@ class MapperSql implements Mapper, Countable
 
         $this->mapFields($o, $fields);
 
-        if (is_callable(array($o, 'afterMap'))) {
+        if (is_callable([$o, 'afterMap'])) {
             $o->afterMap();
         }
 
@@ -217,12 +221,12 @@ class MapperSql implements Mapper, Countable
      * @param Base $object The object to update
      * @param array $fields Field names/default values for the object
      */
-    public function mapFields($object, $fields = array())
+    public function mapFields($object, $fields = [])
     {
-        $relationships = array();
+        $relationships = [];
         foreach ($fields as $fieldName => &$fieldValue) {
             if (strpos($fieldName, '@') !== false) {
-                list($rel, $field) = explode('@', $fieldName, 2);
+                [$rel, $field] = explode('@', $fieldName, 2);
                 $relationships[$rel][$field] = $fieldValue;
                 unset($fields[$fieldName]);
             }
@@ -276,7 +280,7 @@ class MapperSql implements Mapper, Countable
     public function tableToMapper($table)
     {
         if (class_exists(($class = Horde_String::ucwords($table) . 'Mapper'))) {
-            return new $class;
+            return new $class();
         }
         return null;
     }
@@ -317,7 +321,7 @@ class MapperSql implements Mapper, Countable
         $query = BaseQuery::create($query, $this);
         $query->setFields('COUNT(*)')
               ->clearSort();
-        list($sql, $bindParams) = $query->getQuery();
+        [$sql, $bindParams] = $query->getQuery();
         return $this->adapter->selectValue($sql, $bindParams);
     }
 
@@ -334,8 +338,8 @@ class MapperSql implements Mapper, Countable
         $query = BaseQuery::create($query, $this);
         $query->setFields(1)
               ->clearSort();
-        list($sql, $bindParams) = $query->getQuery();
-        return (bool)$this->adapter->selectValue($sql, $bindParams);
+        [$sql, $bindParams] = $query->getQuery();
+        return (bool) $this->adapter->selectValue($sql, $bindParams);
     }
 
     /**
@@ -364,9 +368,9 @@ class MapperSql implements Mapper, Countable
         }
 
         $sql = 'INSERT INTO ' . $this->adapter->quoteTableName($this->table);
-        $keys = array();
-        $placeholders = array();
-        $bindParams = array();
+        $keys = [];
+        $placeholders = [];
+        $bindParams = [];
         foreach ($fields as $field => $value) {
             $keys[] = $this->adapter->quoteColumnName($field);
             $placeholders[] = '?';
@@ -376,7 +380,7 @@ class MapperSql implements Mapper, Countable
 
         $id = $this->adapter->insert($sql, $bindParams);
 
-        return $this->map(array_merge($fields, array($this->primaryKey => $id)));
+        return $this->map(array_merge($fields, [$this->primaryKey => $id]));
     }
 
     /**
@@ -422,7 +426,7 @@ class MapperSql implements Mapper, Countable
         }
 
         $sql = 'UPDATE ' . $this->adapter->quoteTableName($this->table) . ' SET';
-        $bindParams = array();
+        $bindParams = [];
         foreach ($fields as $field => $value) {
             $sql .= ' ' . $this->adapter->quoteColumnName($field) . ' = ?,';
             $bindParams[] = $value;
@@ -447,18 +451,18 @@ class MapperSql implements Mapper, Countable
         if ($object instanceof Base) {
             $key = $this->primaryKey;
             $id = $object->$key;
-            $query = array($key => $id);
+            $query = [$key => $id];
         } elseif ($object instanceof Query) {
             $query = $object;
         } else {
             $key = $this->primaryKey;
-            $query = array($key => $object);
+            $query = [$key => $object];
         }
 
         $query = BaseQuery::create($query, $this);
 
-        $clauses = array();
-        $bindParams = array();
+        $clauses = [];
+        $bindParams = [];
         foreach ($query->tests as $test) {
             $clauses[] = $this->adapter->quoteColumnName($test['field']) . ' ' . $test['test'] . ' ?';
             $bindParams[] = $test['value'];
@@ -534,9 +538,11 @@ class MapperSql implements Mapper, Countable
      *
      * @throws RdoException
      */
-    public function addRelation($relationship, Base $ours,
-                                Base $theirs)
-    {
+    public function addRelation(
+        $relationship,
+        Base $ours,
+        Base $theirs
+    ) {
         if ($ours->hasRelation($relationship, $theirs)) {
             return;
         }
@@ -553,28 +559,30 @@ class MapperSql implements Mapper, Countable
         }
 
         switch ($rel['type']) {
-        case Constants::ONE_TO_ONE:
-        case Constants::MANY_TO_ONE:
-            $ours->{$rel['foreignKey']} = $theirs->$theirKey;
-            $ours->save();
-            break;
+            case Constants::ONE_TO_ONE:
+            case Constants::MANY_TO_ONE:
+                $ours->{$rel['foreignKey']} = $theirs->$theirKey;
+                $ours->save();
+                break;
 
-        case Constants::ONE_TO_MANY:
-            $theirs->{$rel['foreignKey']} = $ours->$ourKey;
-            $theirs->save();
-            break;
+            case Constants::ONE_TO_MANY:
+                $theirs->{$rel['foreignKey']} = $ours->$ourKey;
+                $theirs->save();
+                break;
 
-        case Constants::MANY_TO_MANY:
-            $sql = sprintf('INSERT INTO %s (%s, %s) VALUES (?, ?)',
-                           $this->adapter->quoteTableName($rel['through']),
-                           $this->adapter->quoteColumnName($ourKey),
-                           $this->adapter->quoteColumnName($theirKey));
-            try {
-                $this->adapter->insert($sql, array($ours->$ourKey, $theirs->$theirKey));
-            } catch (Horde_Db_Exception $e) {
-                throw new RdoException($e);
-            }
-            break;
+            case Constants::MANY_TO_MANY:
+                $sql = sprintf(
+                    'INSERT INTO %s (%s, %s) VALUES (?, ?)',
+                    $this->adapter->quoteTableName($rel['through']),
+                    $this->adapter->quoteColumnName($ourKey),
+                    $this->adapter->quoteColumnName($theirKey)
+                );
+                try {
+                    $this->adapter->insert($sql, [$ours->$ourKey, $theirs->$theirKey]);
+                } catch (Horde_Db_Exception $e) {
+                    throw new RdoException($e);
+                }
+                break;
         }
     }
 
@@ -596,9 +604,11 @@ class MapperSql implements Mapper, Countable
      *
      * @throws RdoException
      */
-    public function removeRelation($relationship, Base $ours,
-                                   Base $theirs = null)
-    {
+    public function removeRelation(
+        $relationship,
+        Base $ours,
+        ?Base $theirs = null
+    ) {
         if (!$ours->hasRelation($relationship, $theirs)) {
             return;
         }
@@ -614,36 +624,40 @@ class MapperSql implements Mapper, Countable
         }
 
         switch ($rel['type']) {
-        case Constants::ONE_TO_ONE:
-        case Constants::MANY_TO_ONE:
-            $ours->{$rel['foreignKey']} = null;
-            $ours->save();
-            return 1;
-            break;
+            case Constants::ONE_TO_ONE:
+            case Constants::MANY_TO_ONE:
+                $ours->{$rel['foreignKey']} = null;
+                $ours->save();
+                return 1;
+                break;
 
-        case Constants::ONE_TO_MANY:
-            $theirs->{$rel['foreignKey']} = null;
-            $theirs->save();
-            return 1;
-            break;
+            case Constants::ONE_TO_MANY:
+                $theirs->{$rel['foreignKey']} = null;
+                $theirs->save();
+                return 1;
+                break;
 
-        case Constants::MANY_TO_MANY:
-            $sql = sprintf('DELETE FROM %s WHERE %s = ? ',
-                           $this->adapter->quoteTableName($rel['through']),
-                           $this->adapter->quoteColumnName($ourKey));
-            $values = array($ours->$ourKey);
-            if (!empty($theirs)) {
-                $theirKey = $theirs->mapper->primaryKey;
-                $sql .= sprintf(' AND %s = ?',
-                                $this->adapter->quoteColumnName($theirKey));
-                $values[] = $theirs->$theirKey;
-            }
-            try {
-                return $this->adapter->delete($sql, $values);
-            } catch (Horde_Db_Exception $e) {
-                throw new RdoException($e);
-            }
-            break;
+            case Constants::MANY_TO_MANY:
+                $sql = sprintf(
+                    'DELETE FROM %s WHERE %s = ? ',
+                    $this->adapter->quoteTableName($rel['through']),
+                    $this->adapter->quoteColumnName($ourKey)
+                );
+                $values = [$ours->$ourKey];
+                if (!empty($theirs)) {
+                    $theirKey = $theirs->mapper->primaryKey;
+                    $sql .= sprintf(
+                        ' AND %s = ?',
+                        $this->adapter->quoteColumnName($theirKey)
+                    );
+                    $values[] = $theirs->$theirKey;
+                }
+                try {
+                    return $this->adapter->delete($sql, $values);
+                } catch (Horde_Db_Exception $e) {
+                    throw new RdoException($e);
+                }
+                break;
         }
     }
 
@@ -667,7 +681,7 @@ class MapperSql implements Mapper, Countable
         if (is_null($arg)) {
             $query = null;
         } elseif (is_scalar($arg)) {
-            $query = array($this->primaryKey => $arg);
+            $query = [$this->primaryKey => $arg];
         } else {
             $query = $arg;
         }

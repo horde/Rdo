@@ -1,13 +1,12 @@
 <?php
+
 /**
  * @package Rdo
  */
 
 require_once './Clotho.php';
 
-class XmlItemMapper extends ItemMapper
-{
-}
+class XmlItemMapper extends ItemMapper {}
 
 class XmlItem extends Item
 {

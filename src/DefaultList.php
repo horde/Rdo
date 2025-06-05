@@ -1,12 +1,16 @@
 <?php
+
 /**
  * @category Horde
  * @package  Rdo
  */
+
 namespace Horde\Rdo;
-use \ArrayAccess;
-use \Iterator;
-use \Countable;
+
+use ArrayAccess;
+use Iterator;
+use Countable;
+
 /**
  * Iterator for collections of Rdo objects.
  *
@@ -37,7 +41,7 @@ class DefaultList implements ArrayAccess, Iterator, Countable, RampageList
      * Bind parameters
      * @var array
      */
-    protected $_bindParams = array();
+    protected $_bindParams = [];
 
     /**
      * Result resource
@@ -92,14 +96,14 @@ class DefaultList implements ArrayAccess, Iterator, Countable, RampageList
 
             // Convert the query into a SQL statement and an array of
             // bind parameters.
-            list($this->_sql, $this->_bindParams) = $query->getQuery();
+            [$this->_sql, $this->_bindParams] = $query->getQuery();
         } elseif (is_string($query)) {
             // Straight SQL query, empty bind parameters array.
             $this->_sql = $query;
-            $this->_bindParams = array();
+            $this->_bindParams = [];
         } else {
             // $query is already an array with SQL and bind parameters.
-            list($this->_sql, $this->_bindParams) = $query;
+            [$this->_sql, $this->_bindParams] = $query;
         }
 
         if (!$mapper) {
@@ -230,7 +234,7 @@ class DefaultList implements ArrayAccess, Iterator, Countable, RampageList
      * @param Base $item  The item to add to the list.
      * @param integer $offset  The offset to add or change.
      * @param Base $offset  The item to add to the list.
-     * 
+     *
      * @return Base  An entity object at the offset position or null
      */
     public function offsetSet($offset, $item): void
