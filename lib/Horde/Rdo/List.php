@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @category Horde
  * @package  Rdo
@@ -36,7 +37,7 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
      * Bind parameters
      * @var array
      */
-    protected $_bindParams = array();
+    protected $_bindParams = [];
 
     /**
      * Result resource
@@ -91,14 +92,14 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
 
             // Convert the query into a SQL statement and an array of
             // bind parameters.
-            list($this->_sql, $this->_bindParams) = $query->getQuery();
+            [$this->_sql, $this->_bindParams] = $query->getQuery();
         } elseif (is_string($query)) {
             // Straight SQL query, empty bind parameters array.
             $this->_sql = $query;
-            $this->_bindParams = array();
+            $this->_bindParams = [];
         } else {
             // $query is already an array with SQL and bind parameters.
-            list($this->_sql, $this->_bindParams) = $query;
+            [$this->_sql, $this->_bindParams] = $query;
         }
 
         if (!$mapper) {
@@ -229,7 +230,7 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
      * @param Horde_Rdo_Base $item  The item to add to the list.
      * @param integer $offset  The offset to add or change.
      * @param Horde_Rdo_Base $offset  The item to add to the list.
-     * 
+     *
      * @return Horde_Rdo_Base  An entity object at the offset position or null
      */
     public function offsetSet($offset, $item): void

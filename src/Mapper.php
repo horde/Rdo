@@ -1,7 +1,5 @@
 <?php
+
 namespace Horde\Rdo;
 
-interface Mapper
-{
-    
-}
+interface Mapper {}

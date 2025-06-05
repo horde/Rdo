@@ -1,11 +1,15 @@
 <?php
+
 /**
  * @category Horde
  * @package Rdo
  */
+
 namespace Horde\Rdo;
-use \Iterator;
-use \array_merge;
+
+use Iterator;
+use array_merge;
+
 /**
  * Iterator for Base objects that allows relationships and
  * decorated objects to be handled gracefully.
@@ -13,8 +17,8 @@ use \array_merge;
  * @category Horde
  * @package Rdo
  */
-class DefaultIterator implements Iterator {
-
+class DefaultIterator implements Iterator
+{
     /**
      * @var Base
      */
@@ -25,7 +29,7 @@ class DefaultIterator implements Iterator {
      * list of the fields, lazyFields, relationships, and
      * lazyRelationships properties from the objects Mapper.
      */
-    private $_keys = array();
+    private $_keys = [];
 
     /**
      * Current index
@@ -51,10 +55,12 @@ class DefaultIterator implements Iterator {
         $this->_rdo = $rdo;
 
         $m = $rdo->getMapper();
-        $this->_keys = array_merge($m->fields,
-                                   $m->lazyFields,
-                                   array_keys($m->relationships),
-                                   array_keys($m->lazyRelationships));
+        $this->_keys = array_merge(
+            $m->fields,
+            $m->lazyFields,
+            array_keys($m->relationships),
+            array_keys($m->lazyRelationships)
+        );
     }
 
     /**

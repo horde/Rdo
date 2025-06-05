@@ -1,4 +1,5 @@
 <?php
+
 /**
  * A caching factory for Horde_Rdo_Mapper descendants.
  *
@@ -20,12 +21,11 @@
  */
 class Horde_Rdo_Factory
 {
-
     /**
      * The list of already loaded Horde_Rdo_Mapper classes
      * @var array
      */
-    protected $_mappers = array();
+    protected $_mappers = [];
 
     /**
      * The database connection to pass to the Horde_Rdo_Mapper classes
@@ -63,7 +63,7 @@ class Horde_Rdo_Factory
      * @return Horde_Rdo_Mapper  The Horde_Rdo_Mapper descendant instance.
      * @throws Horde_Rdo_Exception
      */
-    public function create($class, Horde_Db_Adapter $adapter = null)
+    public function create($class, ?Horde_Db_Adapter $adapter = null)
     {
         if (!empty($this->_mappers[$class])) {
             return $this->_mappers[$class];

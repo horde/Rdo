@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Rdo
  */
@@ -12,9 +13,7 @@ require_once 'Horde/Autoloader.php';
 
 /**
  */
-class Task extends Horde_Rdo_Base
-{
-}
+class Task extends Horde_Rdo_Base {}
 
 /**
  */
@@ -36,7 +35,7 @@ foreach ($tm->find(Horde_Rdo::FIND_ALL) as $task) {
 }
 
 // List all of Chuck's tasks.
-$chuck = $tm->find(Horde_Rdo::FIND_ALL, array('task_owner' => 'chuck'));
+$chuck = $tm->find(Horde_Rdo::FIND_ALL, ['task_owner' => 'chuck']);
 echo "\nChuck's tasks:\n";
 foreach ($chuck as $task) {
     echo "  " . $task->task_name . "\n";

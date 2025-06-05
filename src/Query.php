@@ -1,6 +1,5 @@
 <?php
+
 namespace Horde\Rdo;
-interface Query
-{
-    
-}
+
+interface Query {}

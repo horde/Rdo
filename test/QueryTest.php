@@ -18,6 +18,9 @@ use Horde_Rdo_Test_Objects_SimpleMapper;
 use Horde_Db_Migration_Base;
 use Horde_Rdo_Query;
 
+/**
+ * @coversNothing
+ */
 class QueryTest extends TestCase
 {
     protected $db;
@@ -37,7 +40,7 @@ class QueryTest extends TestCase
 
         $t = $migration->createTable(
             'horde_rdo_test',
-            array('autoincrementKey' => 'id')
+            ['autoincrementKey' => 'id']
         );
         $t->column('intprop', 'integer');
         $t->column('textprop', 'string');
@@ -63,34 +66,34 @@ class QueryTest extends TestCase
         $query = Horde_Rdo_Query::create(4, $this->mapper);
         $this->assertInstanceOf('Horde_Rdo_Query', $query);
         $this->assertEquals(
-            array(
-                array(
+            [
+                [
                     'field' => $this->mapper->tableDefinition->getPrimaryKey(),
                     'test' => '=',
-                    'value' => 4
-                ),
-            ),
+                    'value' => 4,
+                ],
+            ],
             $query->tests
         );
 
         $query = Horde_Rdo_Query::create(
-            array('textprop' => 'bar', 'intprop' => 2),
+            ['textprop' => 'bar', 'intprop' => 2],
             $this->mapper
         );
         $this->assertInstanceOf('Horde_Rdo_Query', $query);
         $this->assertEquals(
-            array(
-                array('field' => 'textprop', 'test' => '=', 'value' => 'bar'),
-                array('field' => 'intprop', 'test' => '=', 'value' => 2),
-            ),
+            [
+                ['field' => 'textprop', 'test' => '=', 'value' => 'bar'],
+                ['field' => 'intprop', 'test' => '=', 'value' => 2],
+            ],
             $query->tests
         );
         $this->assertEquals(
-            array(
+            [
                 'horde_rdo_test.id',
                 'horde_rdo_test.intprop',
-                'horde_rdo_test.textprop'
-            ),
+                'horde_rdo_test.textprop',
+            ],
             $query->fields
         );
         $this->assertEquals('AND', $query->conjunction);
@@ -99,14 +102,14 @@ class QueryTest extends TestCase
     public function testGetQuery()
     {
         $query = Horde_Rdo_Query::create(
-            array('textprop' => 'bar', 'intprop' => 2),
+            ['textprop' => 'bar', 'intprop' => 2],
             $this->mapper
         );
         $this->assertEquals(
-            array(
+            [
                 'SELECT horde_rdo_test.id, horde_rdo_test.intprop, horde_rdo_test.textprop FROM horde_rdo_test WHERE horde_rdo_test."textprop" = ? AND horde_rdo_test."intprop" = ?',
-                array('bar', 2)
-            ),
+                ['bar', 2],
+            ],
             $query->getQuery()
         );
     }
@@ -116,10 +119,10 @@ class QueryTest extends TestCase
         $query = Horde_Rdo_Query::create(4, $this->mapper);
         $query->distinct(true);
         $this->assertEquals(
-            array(
+            [
                 'SELECT DISTINCT horde_rdo_test.id, horde_rdo_test.intprop, horde_rdo_test.textprop FROM horde_rdo_test WHERE horde_rdo_test."id" = ?',
-                array(4)
-            ),
+                [4],
+            ],
             $query->getQuery()
         );
     }
@@ -127,22 +130,22 @@ class QueryTest extends TestCase
     public function testSetFields()
     {
         $query = Horde_Rdo_Query::create(4, $this->mapper);
-        $query1 = $query->setFields(array('intprop'));
+        $query1 = $query->setFields(['intprop']);
         $this->assertSame($query, $query1);
         $this->assertEquals(
-            array(
+            [
                 'SELECT intprop FROM horde_rdo_test WHERE horde_rdo_test."id" = ?',
-                array(4)
-            ),
+                [4],
+            ],
             $query->getQuery()
         );
 
-        $query->setFields(array('intprop'), 'prefix.');
+        $query->setFields(['intprop'], 'prefix.');
         $this->assertEquals(
-            array(
+            [
                 'SELECT prefix.intprop FROM horde_rdo_test WHERE horde_rdo_test."id" = ?',
-                array(4)
-            ),
+                [4],
+            ],
             $query->getQuery()
         );
     }
@@ -150,22 +153,22 @@ class QueryTest extends TestCase
     public function testAddFields()
     {
         $query = Horde_Rdo_Query::create(4, $this->mapper);
-        $query->setFields(array('intprop'));
-        $query->addFields(array('id'));
+        $query->setFields(['intprop']);
+        $query->addFields(['id']);
         $this->assertEquals(
-            array(
+            [
                 'SELECT intprop, id FROM horde_rdo_test WHERE horde_rdo_test."id" = ?',
-                array(4)
-            ),
+                [4],
+            ],
             $query->getQuery()
         );
 
-        $query->addFields(array('textprop'), 'prefix.');
+        $query->addFields(['textprop'], 'prefix.');
         $this->assertEquals(
-            array(
+            [
                 'SELECT intprop, id, prefix.textprop FROM horde_rdo_test WHERE horde_rdo_test."id" = ?',
-                array(4)
-            ),
+                [4],
+            ],
             $query->getQuery()
         );
     }
@@ -173,22 +176,22 @@ class QueryTest extends TestCase
     public function testCombineWith()
     {
         $query = Horde_Rdo_Query::create(
-            array('textprop' => 'bar', 'intprop' => 2),
+            ['textprop' => 'bar', 'intprop' => 2],
             $this->mapper
         );
         $this->assertEquals(
-            array(
+            [
                 'SELECT horde_rdo_test.id, horde_rdo_test.intprop, horde_rdo_test.textprop FROM horde_rdo_test WHERE horde_rdo_test."textprop" = ? AND horde_rdo_test."intprop" = ?',
-                array('bar', 2)
-            ),
+                ['bar', 2],
+            ],
             $query->getQuery()
         );
         $query->combineWith('OR');
         $this->assertEquals(
-            array(
+            [
                 'SELECT horde_rdo_test.id, horde_rdo_test.intprop, horde_rdo_test.textprop FROM horde_rdo_test WHERE horde_rdo_test."textprop" = ? OR horde_rdo_test."intprop" = ?',
-                array('bar', 2)
-            ),
+                ['bar', 2],
+            ],
             $query->getQuery()
         );
     }
@@ -198,18 +201,18 @@ class QueryTest extends TestCase
         $query = Horde_Rdo_Query::create(4, $this->mapper);
         $query->sortBy('intprop');
         $this->assertEquals(
-            array(
+            [
                 'SELECT horde_rdo_test.id, horde_rdo_test.intprop, horde_rdo_test.textprop FROM horde_rdo_test WHERE horde_rdo_test."id" = ? ORDER BY intprop',
-                array(4)
-            ),
+                [4],
+            ],
             $query->getQuery()
         );
         $query->sortBy('textprop');
         $this->assertEquals(
-            array(
+            [
                 'SELECT horde_rdo_test.id, horde_rdo_test.intprop, horde_rdo_test.textprop FROM horde_rdo_test WHERE horde_rdo_test."id" = ? ORDER BY intprop, textprop',
-                array(4)
-            ),
+                [4],
+            ],
             $query->getQuery()
         );
     }
@@ -218,16 +221,16 @@ class QueryTest extends TestCase
     {
         $query = Horde_Rdo_Query::create(4, $this->mapper);
         $query->sortBy('intprop');
-        $this->assertEquals(array('intprop'), $query->sortby);
+        $this->assertEquals(['intprop'], $query->sortby);
 
         $this->mapper->sortBy('textprop');
         $query = Horde_Rdo_Query::create(4, $this->mapper);
-        $this->assertEquals(array('textprop'), $query->sortby);
+        $this->assertEquals(['textprop'], $query->sortby);
         $this->assertEquals(
-            array(
+            [
                 'SELECT horde_rdo_test.id, horde_rdo_test.intprop, horde_rdo_test.textprop FROM horde_rdo_test WHERE horde_rdo_test."id" = ? ORDER BY textprop',
-                array(4)
-            ),
+                [4],
+            ],
             $query->getQuery()
         );
     }
@@ -239,10 +242,10 @@ class QueryTest extends TestCase
         $query->clearSort();
         $query->sortBy('textprop');
         $this->assertEquals(
-            array(
+            [
                 'SELECT horde_rdo_test.id, horde_rdo_test.intprop, horde_rdo_test.textprop FROM horde_rdo_test WHERE horde_rdo_test."id" = ? ORDER BY textprop',
-                array(4)
-            ),
+                [4],
+            ],
             $query->getQuery()
         );
     }
@@ -252,18 +255,18 @@ class QueryTest extends TestCase
         $query = Horde_Rdo_Query::create(4, $this->mapper);
         $query->limit(10);
         $this->assertEquals(
-            array(
+            [
                 'SELECT horde_rdo_test.id, horde_rdo_test.intprop, horde_rdo_test.textprop FROM horde_rdo_test WHERE horde_rdo_test."id" = ? LIMIT 10',
-                array(4)
-            ),
+                [4],
+            ],
             $query->getQuery()
         );
         $query->limit(10, 20);
         $this->assertEquals(
-            array(
+            [
                 'SELECT horde_rdo_test.id, horde_rdo_test.intprop, horde_rdo_test.textprop FROM horde_rdo_test WHERE horde_rdo_test."id" = ? LIMIT 20, 10',
-                array(4)
-            ),
+                [4],
+            ],
             $query->getQuery()
         );
     }

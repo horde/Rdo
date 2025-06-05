@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Rdo
  * @subpackage UnitTests
@@ -26,26 +27,24 @@ if (empty($conf)) {
 /**
  * Items
  */
-class Item extends Horde_Rdo_Base
-{
-}
+class Item extends Horde_Rdo_Base {}
 
 /**
  * Item Mapper
  */
 class ItemMapper extends Horde_Rdo_Mapper
 {
-    protected $_relationships = array(
-        'parent' => array('type' => Horde_Rdo::ONE_TO_ONE,
-                          'foreignKey' => 'item_parent',
-                          'mapper' => 'ItemMapper'),
-    );
+    protected $_relationships = [
+        'parent' => ['type' => Horde_Rdo::ONE_TO_ONE,
+            'foreignKey' => 'item_parent',
+            'mapper' => 'ItemMapper'],
+    ];
 
-    protected $_lazyRelationships = array(
-        'resources' => array('type' => Horde_Rdo::MANY_TO_MANY,
-                             'mapper' => 'ResourceMapper',
-                             'through' => 'clotho_wbs_resources'),
-    );
+    protected $_lazyRelationships = [
+        'resources' => ['type' => Horde_Rdo::MANY_TO_MANY,
+            'mapper' => 'ResourceMapper',
+            'through' => 'clotho_wbs_resources'],
+    ];
 
     protected $_table = 'clotho_wbs_items';
 }
@@ -53,9 +52,7 @@ class ItemMapper extends Horde_Rdo_Mapper
 /**
  * Dependencies
  */
-class Dependency extends Horde_Rdo_Base
-{
-}
+class Dependency extends Horde_Rdo_Base {}
 
 /**
  * Dependency Mapper.
@@ -68,9 +65,7 @@ class DependencyMapper extends Horde_Rdo_Mapper
 /**
  * Calendars
  */
-class Calendar extends Horde_Rdo_Base
-{
-}
+class Calendar extends Horde_Rdo_Base {}
 
 /**
  * Calendar Mapper.
@@ -83,23 +78,21 @@ class CalendarMapper extends Horde_Rdo_Mapper
 /**
  * Resources
  */
-class Resource extends Horde_Rdo_Base
-{
-}
+class Resource extends Horde_Rdo_Base {}
 
 /**
  * Resource Mapper.
  */
 class ResourceMapper extends Horde_Rdo_Mapper
 {
-    protected $_lazyRelationships = array(
-        'availabilities' => array('type' => Horde_Rdo::ONE_TO_MANY,
-                                  'foreignKey' => 'resource_id',
-                                  'mapper' => 'ResourceAvailabilityMapper'),
-        'items' => array('type' => Horde_Rdo::MANY_TO_MANY,
-                         'mapper' => 'ItemMapper',
-                         'through' => 'clotho_wbs_resources'),
-        );
+    protected $_lazyRelationships = [
+        'availabilities' => ['type' => Horde_Rdo::ONE_TO_MANY,
+            'foreignKey' => 'resource_id',
+            'mapper' => 'ResourceAvailabilityMapper'],
+        'items' => ['type' => Horde_Rdo::MANY_TO_MANY,
+            'mapper' => 'ItemMapper',
+            'through' => 'clotho_wbs_resources'],
+    ];
 
     protected $_table = 'clotho_resources';
 }
@@ -107,20 +100,18 @@ class ResourceMapper extends Horde_Rdo_Mapper
 /**
  * ResourceAvailability
  */
-class ResourceAvailability extends Horde_Rdo_Base
-{
-}
+class ResourceAvailability extends Horde_Rdo_Base {}
 
 /**
  * ResourceAvailability Mapper.
  */
 class ResourceAvailabilityMapper extends Horde_Rdo_Mapper
 {
-    protected $_relationships = array(
-        'resource' => array('type' => Horde_Rdo::MANY_TO_ONE,
-                            'foreignKey' => 'resource_id',
-                            'mapper' => 'ResourceMapper'),
-        );
+    protected $_relationships = [
+        'resource' => ['type' => Horde_Rdo::MANY_TO_ONE,
+            'foreignKey' => 'resource_id',
+            'mapper' => 'ResourceMapper'],
+    ];
 
     protected $_table = 'clotho_resource_availability';
 }

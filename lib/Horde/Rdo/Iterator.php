@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @category Horde
  * @package Rdo
@@ -11,8 +12,8 @@
  * @category Horde
  * @package Rdo
  */
-class Horde_Rdo_Iterator implements Iterator {
-
+class Horde_Rdo_Iterator implements Iterator
+{
     /**
      * @var Horde_Rdo_Base
      */
@@ -23,7 +24,7 @@ class Horde_Rdo_Iterator implements Iterator {
      * list of the fields, lazyFields, relationships, and
      * lazyRelationships properties from the objects Horde_Rdo_Mapper.
      */
-    private $_keys = array();
+    private $_keys = [];
 
     /**
      * Current index
@@ -49,10 +50,12 @@ class Horde_Rdo_Iterator implements Iterator {
         $this->_rdo = $rdo;
 
         $m = $rdo->getMapper();
-        $this->_keys = array_merge($m->fields,
-                                   $m->lazyFields,
-                                   array_keys($m->relationships),
-                                   array_keys($m->lazyRelationships));
+        $this->_keys = array_merge(
+            $m->fields,
+            $m->lazyFields,
+            array_keys($m->relationships),
+            array_keys($m->lazyRelationships)
+        );
     }
 
     /**

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Rdo
  */
@@ -12,15 +13,11 @@ if (empty($conf)) {
 
 /**
  */
-class User extends Horde_Rdo_Base
-{
-}
+class User extends Horde_Rdo_Base {}
 
 /**
  */
-class UserMapper extends Horde_Rdo_Mapper
-{
-}
+class UserMapper extends Horde_Rdo_Mapper {}
 
 $um = new UserMapper($conf['adapter']);
 
@@ -37,13 +34,13 @@ $exists = $um->exists(1);
 echo "exists: " . ($exists ? 'yes' : 'no') . "\n";
 
 // Look for Alice
-$userTwo = $um->findOne(array('name' => 'Alice'));
+$userTwo = $um->findOne(['name' => 'Alice']);
 if ($userTwo) {
     echo "Found Alice: id $userTwo->id\n";
 } else {
     echo "No Alice found, creating:\n";
     // $userOne = $um->create(array('name' => 'Alice', 'phone' => '212-555-6565'));
-    $userOne = new User(array('name' => 'Alice', 'phone' => '212-555-6565'));
+    $userOne = new User(['name' => 'Alice', 'phone' => '212-555-6565']);
     $userOne->setMapper($um);
     $userOne->save();
     $userOneId = $userOne->id;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @category Horde
  * @package  Rdo
@@ -36,7 +37,7 @@ class Horde_Rdo_Query_Literal
      */
     public function __construct($string)
     {
-        $this->_string = (string)$string;
+        $this->_string = (string) $string;
     }
 
     /**

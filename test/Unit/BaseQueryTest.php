@@ -3,9 +3,11 @@
 namespace Horde\Rdo\Unit\Test;
 
 use Horde\Test\TestCase;
-
 use Horde\Rdo\BaseQuery;
 
+/**
+ * @coversNothing
+ */
 class BaseQueryTest extends TestCase
 {
     public function testCombineWithAND()
