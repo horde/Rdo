@@ -71,6 +71,7 @@ class Horde_Rdo_Iterator implements Iterator
      *
      * @return mixed The current value
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         $key = $this->key();
@@ -82,6 +83,7 @@ class Horde_Rdo_Iterator implements Iterator
      *
      * @return mixed The current key
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return current($this->_keys);

@@ -127,6 +127,10 @@ class Horde_Rdo_Query
      */
     public function setMapper($mapper)
     {
+        if ($mapper === null) {
+            return $this;
+        }
+
         if ($mapper === $this->mapper) {
             return $this;
         }
