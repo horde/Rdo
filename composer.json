@@ -11,10 +11,14 @@
             "role": "lead"
         }
     ],
-    "time": "2025-06-05",
+    "keywords": [
+        "orm",
+        "datamapper"
+    ],
+    "time": "2026-04-10",
     "repositories": [],
     "require": {
-        "php": "^7.4 || ^8",
+        "php": "^8.1",
         "horde/db": "^3 || dev-FRAMEWORK_6_0",
         "horde/exception": "^3 || dev-FRAMEWORK_6_0",
         "horde/util": "^3 || dev-FRAMEWORK_6_0"
@@ -33,12 +37,13 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Horde\\Rdo\\Test\\": "test/",
-            "Horde\\Rdo\\Test\\Fixtures\\": "test/fixtures/"
+            "Horde\\Rdo\\Test\\": "test/"
         }
     },
     "config": {
-        "allow-plugins": {}
+        "allow-plugins": {
+            "horde/horde-installer-plugin": true
+        }
     },
     "extra": {
         "branch-alias": {
