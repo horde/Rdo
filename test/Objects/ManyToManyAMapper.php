@@ -1,19 +1,20 @@
 <?php
 
-namespace Horde\Rdo\Objects;
+declare(strict_types=1);
 
-use Horde_Rdo_Mapper;
+namespace Horde\Rdo\Test\Objects;
+
 use Horde_Rdo;
+use Horde_Rdo_Mapper;
 
 class ManyToManyAMapper extends Horde_Rdo_Mapper
 {
-    /**
-     * Inflector doesn't support Horde-style tables yet
-     */
     protected $_table = 'test_manytomanya';
     protected $_lazyRelationships = [
         'manybs' => [
             'type' => Horde_Rdo::MANY_TO_MANY,
             'through' => 'test_manythrough',
-            'mapper' => 'Horde\Rdo\Objects\ManyToManyBMapper']];
+            'mapper' => ManyToManyBMapper::class,
+        ],
+    ];
 }

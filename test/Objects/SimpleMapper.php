@@ -1,6 +1,12 @@
 <?php
 
-class Horde_Rdo_Test_Objects_SimpleMapper extends Horde_Rdo_Mapper
+declare(strict_types=1);
+
+namespace Horde\Rdo\Test\Objects;
+
+use Horde_Rdo_Mapper;
+
+class SimpleMapper extends Horde_Rdo_Mapper
 {
     protected $_table = 'horde_rdo_test';
 }

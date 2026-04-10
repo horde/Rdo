@@ -1,13 +1,14 @@
 <?php
 
-namespace Horde\Rdo\Unit\Test;
+declare(strict_types=1);
 
-use Horde\Test\TestCase;
+namespace Horde\Rdo\Test\Unit;
+
 use Horde\Rdo\BaseQuery;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @coversNothing
- */
+#[CoversClass(BaseQuery::class)]
 class BaseQueryTest extends TestCase
 {
     public function testCombineWithAND()
