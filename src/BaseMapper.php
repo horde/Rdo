@@ -474,8 +474,8 @@ abstract class BaseMapper implements Countable, Mapper
             throw new RdoException('Refusing to delete the entire table.');
         }
 
-        $sql = 'DELETE FROM ' . $this->adapter->quoteTableName($this->table) .
-               ' WHERE ' . implode(' ' . $query->conjunction . ' ', $clauses);
+        $sql = 'DELETE FROM ' . $this->adapter->quoteTableName($this->table)
+               . ' WHERE ' . implode(' ' . $query->conjunction . ' ', $clauses);
 
         return $this->adapter->delete($sql, $bindParams);
     }

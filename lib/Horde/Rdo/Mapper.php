@@ -464,8 +464,8 @@ abstract class Horde_Rdo_Mapper implements Countable
             throw new Horde_Rdo_Exception('Refusing to delete the entire table.');
         }
 
-        $sql = 'DELETE FROM ' . $this->adapter->quoteTableName($this->table) .
-               ' WHERE ' . implode(' ' . $query->conjunction . ' ', $clauses);
+        $sql = 'DELETE FROM ' . $this->adapter->quoteTableName($this->table)
+               . ' WHERE ' . implode(' ' . $query->conjunction . ' ', $clauses);
 
         return $this->adapter->delete($sql, $bindParams);
     }
