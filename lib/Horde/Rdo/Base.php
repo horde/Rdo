@@ -166,6 +166,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
      *
      * @see __get()
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($field)
     {
         return $this->__get($field);
@@ -338,7 +339,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
      */
     public function addRelation($relationship, Horde_Rdo_Base $peer)
     {
-        $this->mapper->addRelation($relationship, $this, $peer);
+        $this->getMapper()->addRelation($relationship, $this, $peer);
     }
 
     /**
@@ -372,7 +373,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
                 if (empty($peer) || empty($result)) {
                     return (bool) $result;
                 }
-                $key = $result->mapper->primaryKey;
+                $key = $result->getMapper()->primaryKey;
                 return $result->$key == $peer->$key;
 
             case Horde_Rdo::ONE_TO_MANY:
@@ -380,7 +381,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
                 if (empty($peer)) {
                     return (bool) count($result);
                 }
-                $key = $peer->mapper->primaryKey;
+                $key = $peer->getMapper()->primaryKey;
                 foreach ($result as $item) {
                     if ($item->$key == $peer->$key) {
                         return true;
@@ -410,7 +411,7 @@ abstract class Horde_Rdo_Base implements IteratorAggregate, ArrayAccess
      */
     public function removeRelation($relationship, ?Horde_Rdo_Base $peer = null)
     {
-        return $this->mapper->removeRelation($relationship, $this, $peer);
+        return $this->getMapper()->removeRelation($relationship, $this, $peer);
     }
 
     /**

@@ -23,8 +23,16 @@
  * @category Horde
  * @package  Rdo
  */
+#[\AllowDynamicProperties]
 abstract class Horde_Rdo_Mapper implements Countable
 {
+    /**
+     * The Horde_Db_Adapter instance for backend access.
+     *
+     * @var Horde_Db_Adapter
+     */
+    public $adapter;
+
     /**
      * If this is true and fields named created_at and updated_at are present,
      * Rdo will automatically set creation and last updated timestamps.
@@ -309,13 +317,14 @@ abstract class Horde_Rdo_Mapper implements Countable
      *
      * @return integer All objects matching $query.
      */
+    #[\ReturnTypeWillChange]
     public function count($query = null)
     {
         $query = Horde_Rdo_Query::create($query, $this);
         $query->setFields('COUNT(*)')
               ->clearSort();
         [$sql, $bindParams] = $query->getQuery();
-        return $this->adapter->selectValue($sql, $bindParams);
+        return (int) $this->adapter->selectValue($sql, $bindParams);
     }
 
     /**
@@ -600,7 +609,7 @@ abstract class Horde_Rdo_Mapper implements Countable
         ?Horde_Rdo_Base $theirs = null
     ) {
         if (!$ours->hasRelation($relationship, $theirs)) {
-            return;
+            return 0;
         }
 
         $ourKey = $this->primaryKey;
@@ -619,13 +628,14 @@ abstract class Horde_Rdo_Mapper implements Countable
                 $ours->{$rel['foreignKey']} = null;
                 $ours->save();
                 return 1;
-                break;
 
             case Horde_Rdo::ONE_TO_MANY:
+                if ($theirs === null) {
+                    throw new Horde_Rdo_Exception('Cannot remove a ONE_TO_MANY relation without specifying the peer object');
+                }
                 $theirs->{$rel['foreignKey']} = null;
                 $theirs->save();
                 return 1;
-                break;
 
             case Horde_Rdo::MANY_TO_MANY:
                 $sql = sprintf(
@@ -635,7 +645,7 @@ abstract class Horde_Rdo_Mapper implements Countable
                 );
                 $values = [$ours->$ourKey];
                 if (!empty($theirs)) {
-                    $theirKey = $theirs->mapper->primaryKey;
+                    $theirKey = $theirs->getMapper()->primaryKey;
                     $sql .= sprintf(
                         ' AND %s = ?',
                         $this->adapter->quoteColumnName($theirKey)
@@ -647,8 +657,9 @@ abstract class Horde_Rdo_Mapper implements Countable
                 } catch (Horde_Db_Exception $e) {
                     throw new Horde_Rdo_Exception($e);
                 }
-                break;
         }
+
+        return 0;
     }
 
     /**
