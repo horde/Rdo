@@ -285,8 +285,8 @@ class Horde_Rdo_Query
         }
         /* Anything other than INNER and LEFT JOINs will cause errors as the
          * primary object could have all values filled with null */
-        if (isset($args['join_type']) &&
-            !in_array(
+        if (isset($args['join_type'])
+            && !in_array(
                 Horde_String::upper($args['join_type']),
                 ['INNER JOIN', 'LEFT JOIN']
             )) {
