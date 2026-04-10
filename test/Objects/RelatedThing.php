@@ -1,6 +1,8 @@
 <?php
 
-namespace Horde\Rdo\Objects;
+declare(strict_types=1);
+
+namespace Horde\Rdo\Test\Objects;
 
 use Horde_Rdo_Base;
 

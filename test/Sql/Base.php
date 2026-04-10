@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright 2010-2026 Horde LLC (http://www.horde.org/)
  *
@@ -10,24 +12,24 @@
  * @license    http://www.horde.org/licenses/lgpl21 LGPL 2.1
  */
 
-namespace Horde\Rdo\Sql;
+namespace Horde\Rdo\Test\Sql;
 
-use Horde_Test_Case as TestCase;
+use Horde_Db_Exception;
 use Horde_Db_Migration_Base;
 use Horde_Rdo;
-use Horde_Rdo_List;
 use Horde_Rdo_Base;
-use Horde\Rdo\Objects\{SomeLazyBaseObjectMapper,
-    SomeEagerBaseObjectMapper,
-    ManyToManyAMapper,
-    ManyToManyBMapper,
-    RelatedThingMapper,
-    SomeLazyBaseObject,
-    RelatedThing};
+use Horde_Rdo_Exception;
+use Horde_Rdo_List;
+use Horde\Rdo\Test\Objects\ManyToManyAMapper;
+use Horde\Rdo\Test\Objects\ManyToManyBMapper;
+use Horde\Rdo\Test\Objects\RelatedThing;
+use Horde\Rdo\Test\Objects\SomeEagerBaseObjectMapper;
+use Horde\Rdo\Test\Objects\SomeLazyBaseObject;
+use Horde\Rdo\Test\Objects\SomeLazyBaseObjectMapper;
+use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @coversNothing
- */
+#[CoversNothing]
 class Base extends TestCase
 {
     protected static $db;
@@ -100,7 +102,6 @@ class Base extends TestCase
         $t->column('b_intproperty', 'integer', ['null' => false]);
         $t->end();
 
-
         $t = $migration->createTable('test_manythrough');
         $t->column('a_id', 'integer');
         $t->column('b_id', 'integer');
@@ -108,7 +109,6 @@ class Base extends TestCase
 
         $migration->migrate('up');
     }
-
 
     public static function setUpBeforeClass(): void
     {
@@ -136,7 +136,6 @@ class Base extends TestCase
         foreach ($statements as $stmt) {
             self::$db->execute($stmt);
         }
-
     }
 
     public function testListOffsetExistsReturnFalseForTooBigOffset()
@@ -238,88 +237,86 @@ class Base extends TestCase
     public function testListOffsetGetReturnObjectForLast()
     {
         $list = self::$LazyBaseObjectMapper->find();
-        $this->assertTrue($list[$list->count() - 1] instanceof SomeLazyBaseObject, "return Object for last index in list");
+        $this->assertInstanceOf(SomeLazyBaseObject::class, $list[$list->count() - 1]);
     }
 
     public function testListOffsetGetReturnObjectForFirst()
     {
         $list = self::$LazyBaseObjectMapper->find();
-        $this->assertTrue($list[0] instanceof SomeLazyBaseObject, "return Object for first index in list");
+        $this->assertInstanceOf(SomeLazyBaseObject::class, $list[0]);
     }
 
     public function testListOffsetSetThrowException()
     {
-        $this->expectException('Horde_Rdo_Exception');
+        $this->expectException(Horde_Rdo_Exception::class);
 
         $list = self::$LazyBaseObjectMapper->find();
         $list[0] = $list[0];
-        $this->assertTrue($list[0] instanceof SomeLazyBaseObject, "Throw exception when trying to set a new element to the list");
     }
 
     public function testListOffsetUnsetThrowException()
     {
-        $this->expectException('Horde_Rdo_Exception');
+        $this->expectException(Horde_Rdo_Exception::class);
 
         $list = self::$LazyBaseObjectMapper->find();
         unset($list[0]);
-        $this->assertTrue($list[0] instanceof Horde_Rdo_Test_Objects_SomeLazyBaseObject, "Throw exception when trying to unset an element");
     }
 
     public function testFindReturnsHordeRdoList()
     {
         $result = self::$LazyBaseObjectMapper->find();
-        $this->assertTrue($result instanceof Horde_Rdo_List, "find() returns a Horde_Rdo_List");
+        $this->assertInstanceOf(Horde_Rdo_List::class, $result);
     }
 
     public function testFindOneReturnsEntity()
     {
         $result = self::$LazyBaseObjectMapper->findOne();
-        $this->assertTrue($result instanceof Horde_Rdo_Base, "findOne() returns a Horde_Rdo_Base");
+        $this->assertInstanceOf(Horde_Rdo_Base::class, $result);
     }
+
     public function testFindOneWithScalarReturnsEntityWithKeyValue()
     {
         $result = self::$LazyBaseObjectMapper->findOne(2);
-        $this->assertEquals(2, $result->baseobject_id, "findOne() returns the right Horde_Rdo_Base if key is given as argument");
+        $this->assertEquals(2, $result->baseobject_id);
     }
 
     public function testToOneRelationRetrievesEntityWhenKeyIsFound()
     {
         $entity = self::$LazyBaseObjectMapper->findOne(1);
-        $this->assertTrue($entity->lazyRelatedThing instanceof RelatedThing, "to-one-relations return an instance object");
+        $this->assertInstanceOf(RelatedThing::class, $entity->lazyRelatedThing);
     }
 
     public function testToOneRelationRetrievesCorrectEntityWhenKeyIsFound()
     {
         $result = self::$LazyBaseObjectMapper->findOne(1);
-        $this->assertEquals(100, $result->lazyRelatedThing->relatedthing_intproperty, "to-one-relations return correct related object when key is found");
+        $this->assertEquals(100, $result->lazyRelatedThing->relatedthing_intproperty);
     }
 
     public function testLazyToOneRelationThrowsExceptionWhenKeyIsNotFound()
     {
-        $this->expectException('Horde_Rdo_Exception');
+        $this->expectException(Horde_Rdo_Exception::class);
 
         $entity = self::$LazyBaseObjectMapper->findOne(3);
-        $this->assertNull($entity->lazyRelatedThing, "lazy to-one-relations throw exception when relation key is not found");
+        $entity->lazyRelatedThing;
     }
 
     public function testLazyToOneRelationReturnsNullWhenKeyIsEmpty()
     {
         $entity = self::$LazyBaseObjectMapper->findOne(4);
-        $this->assertNull($entity->lazyRelatedThing, "lazy to-one-relations returns 0 when relation key is empty() value");
+        $this->assertNull($entity->lazyRelatedThing);
     }
 
     public function testObjectWithEagerToOneRelationIsNotLoadedWhenRelatedObjectDoesntExist()
     {
         $entity = self::$EagerBaseObjectMapper->findOne(3);
-        $this->assertNull($entity, "Base Object not loaded when eager relation key references nonexisting line");
+        $this->assertNull($entity);
     }
 
     public function testObjectWithEagerToOneRelationIsNotLoadedWhenlWhenKeyIsNull()
     {
         $entity = self::$EagerBaseObjectMapper->findOne(4);
-        $this->assertNull($entity, "Base Object not loaded when eager relation key is null");
+        $this->assertNull($entity);
     }
-
 
     public static function tearDownAfterClass(): void
     {
@@ -335,5 +332,4 @@ class Base extends TestCase
             self::$db = null;
         }
     }
-
 }

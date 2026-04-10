@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright 2016-2026 Horde LLC (http://www.horde.org/)
  *
@@ -10,17 +12,16 @@
  * @license    http://www.horde.org/licenses/lgpl21 LGPL 2.1
  */
 
-namespace Horde\Rdo\Test;
+namespace Horde\Rdo\Test\Sql;
 
-use Horde_Test_Case as TestCase;
-use Horde_Test_Factory_Db;
-use Horde_Rdo_Test_Objects_SimpleMapper;
 use Horde_Db_Migration_Base;
 use Horde_Rdo_Query;
+use Horde_Test_Factory_Db;
+use Horde\Rdo\Test\Objects\SimpleMapper;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @coversNothing
- */
+#[CoversClass(Horde_Rdo_Query::class)]
 class QueryTest extends TestCase
 {
     protected $db;
@@ -30,7 +31,7 @@ class QueryTest extends TestCase
     {
         $factory_db = new Horde_Test_Factory_Db();
         $this->db = $factory_db->create();
-        $this->mapper = new Horde_Rdo_Test_Objects_SimpleMapper($this->db);
+        $this->mapper = new SimpleMapper($this->db);
         $migration = new Horde_Db_Migration_Base($this->db);
 
         $currentTables = $migration->tables();
@@ -60,11 +61,11 @@ class QueryTest extends TestCase
     {
         $query1 = new Horde_Rdo_Query();
         $query2 = Horde_Rdo_Query::create($query1);
-        $this->assertInstanceOf('Horde_Rdo_Query', $query2);
+        $this->assertInstanceOf(Horde_Rdo_Query::class, $query2);
         $this->assertNotSame($query1, $query2);
 
         $query = Horde_Rdo_Query::create(4, $this->mapper);
-        $this->assertInstanceOf('Horde_Rdo_Query', $query);
+        $this->assertInstanceOf(Horde_Rdo_Query::class, $query);
         $this->assertEquals(
             [
                 [
@@ -80,7 +81,7 @@ class QueryTest extends TestCase
             ['textprop' => 'bar', 'intprop' => 2],
             $this->mapper
         );
-        $this->assertInstanceOf('Horde_Rdo_Query', $query);
+        $this->assertInstanceOf(Horde_Rdo_Query::class, $query);
         $this->assertEquals(
             [
                 ['field' => 'textprop', 'test' => '=', 'value' => 'bar'],

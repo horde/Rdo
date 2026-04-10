@@ -1,19 +1,20 @@
 <?php
 
-namespace Horde\Rdo\Objects;
+declare(strict_types=1);
 
-use Horde_Rdo_Mapper;
+namespace Horde\Rdo\Test\Objects;
+
 use Horde_Rdo;
+use Horde_Rdo_Mapper;
 
 class SomeEagerBaseObjectMapper extends Horde_Rdo_Mapper
 {
-    /**
-     * Inflector doesn't support Horde-style tables yet
-     */
     protected $_table = 'test_someeagerbaseobjects';
     protected $_relationships = [
-        'eagerRelatedThing'  => ['type' => Horde_Rdo::ONE_TO_ONE,
+        'eagerRelatedThing' => [
+            'type' => Horde_Rdo::ONE_TO_ONE,
             'foreignKey' => 'relatedthing_id',
-            'mapper' => 'Horde\Rdo\Objects\RelatedThingMapper'],
+            'mapper' => RelatedThingMapper::class,
+        ],
     ];
 }
