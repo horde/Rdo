@@ -198,14 +198,12 @@ class SqlRepository implements Repository
         foreach ($this->schema->getEagerFields() as $field) {
             $columns[] = $field->columnName();
         }
-        if (empty($columns)) {
-            $columns = ['*'];
-        }
 
         $builder = new SelectBuilder($this->adapter);
-        $builder = $builder
-            ->from($this->schema->getTable())
-            ->columns(...$columns);
+        $builder = $builder->from($this->schema->getTable());
+        if (!empty($columns)) {
+            $builder = $builder->columns(...$columns);
+        }
 
         // Apply criterion
         $builder = $this->visitor->apply($builder, $criterion);
