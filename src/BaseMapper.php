@@ -10,6 +10,7 @@ namespace Horde\Rdo;
 use Countable;
 use Horde_Db_Adapter;
 use Horde_Db_Adapter_Base_TableDefinition;
+use Horde\Db\Query\QuotingInterface;
 use Horde_Support_Inflector;
 use Horde_String;
 
@@ -33,7 +34,7 @@ use Horde_String;
  * @category Horde
  * @package  Rdo
  */
-abstract class BaseMapper implements Countable, Mapper
+class BaseMapper implements Countable, Mapper
 {
     /**
      * If this is true and fields named created_at and updated_at are present,
@@ -706,5 +707,200 @@ abstract class BaseMapper implements Countable, Mapper
     {
         $this->_defaultSort = $sort;
         return $this;
+    }
+
+    // --- TypeSchema bridge ---
+
+    /**
+     * Cached TypeSchema instance, built lazily from legacy properties.
+     */
+    private ?TypeSchema $typeSchema = null;
+
+    /**
+     * Get a TypeSchema representation of this mapper's metadata.
+     *
+     * Translates the legacy protected properties ($_table, $_relationships,
+     * etc.) into a TypeSchema on first call. The result is cached for
+     * subsequent access.
+     *
+     * @return TypeSchema
+     */
+    public function getTypeSchema(): TypeSchema
+    {
+        if ($this->typeSchema === null) {
+            $this->typeSchema = $this->buildTypeSchema();
+        }
+        return $this->typeSchema;
+    }
+
+    /**
+     * Build a TypeSchema from this mapper's legacy configuration.
+     *
+     * Reads through the same property accessors that subclasses populate
+     * via protected $_relationships, $_lazyFields, etc. Field types default
+     * to STRING since legacy config doesn't carry type information (type
+     * casting is handled at the map()/mapFields() level via tableDefinition).
+     *
+     * Subclasses may override this to provide richer type information.
+     *
+     * @return TypeSchema
+     */
+    protected function buildTypeSchema(): TypeSchema
+    {
+        $entityClass = $this->_classname ?? $this->mapperToEntity() ?? Base::class;
+        $schema = new TypeSchema($entityClass, $this->table);
+
+        // Primary key
+        $schema->id($this->primaryKey, FieldType::INT);
+
+        // Eager fields (excluding PK, already registered)
+        foreach ($this->fields as $field) {
+            if ($field !== $this->primaryKey) {
+                $schema->field($field, FieldType::STRING);
+            }
+        }
+
+        // Lazy fields
+        foreach ($this->_lazyFields as $field) {
+            $schema->field($field, FieldType::STRING, lazy: true);
+        }
+
+        // Relationships
+        $allRelationships = array_merge($this->_relationships, $this->_lazyRelationships);
+        foreach ($allRelationships as $name => $rel) {
+            $target = $rel['mapper'] ?? $name;
+            $fk = $rel['foreignKey'] ?? null;
+            match ($rel['type']) {
+                Constants::ONE_TO_ONE => $schema->hasOne($name, $target, $fk),
+                Constants::ONE_TO_MANY => $schema->hasMany($name, $target, $fk),
+                Constants::MANY_TO_ONE => $schema->belongsTo($name, $target, $fk),
+                Constants::MANY_TO_MANY => $schema->manyToMany(
+                    $name,
+                    $target,
+                    $rel['through'] ?? '',
+                    $fk,
+                ),
+                default => null,
+            };
+        }
+
+        // Timestamps
+        if ($this->_setTimestamps) {
+            $schema->timestamps();
+        }
+
+        return $schema;
+    }
+
+    // --- New-style query bridge ---
+
+    /**
+     * Find entities using a Criterion or CriteriaBuilder.
+     *
+     * Returns an array of Base entities (not DefaultList). Each row is
+     * hydrated via map(), so afterMap() callbacks and type casting work
+     * normally.
+     *
+     * Requires the adapter to implement QuotingInterface (available when
+     * using the DBAL query builder from Horde\Db). Throws RdoException
+     * if the adapter does not support it.
+     *
+     * @param Criterion|CriteriaBuilder $criteria Search criteria.
+     *
+     * @return Base[] Array of hydrated entities.
+     *
+     * @throws RdoException If adapter lacks QuotingInterface support.
+     */
+    public function findByCriteria(Criterion|CriteriaBuilder $criteria): array
+    {
+        $this->requireQuotingInterface();
+
+        $schema = $this->getTypeSchema();
+        $visitor = new SqlCriterionVisitor($schema);
+
+        $criterion = $criteria instanceof CriteriaBuilder
+            ? $criteria->criterion()
+            : $criteria;
+
+        $builder = new \Horde\Db\Query\SelectBuilder($this->adapter);
+        $builder = $builder->from($schema->getTable());
+
+        $builder = $visitor->apply($builder, $criterion);
+
+        if ($criteria instanceof CriteriaBuilder) {
+            foreach ($criteria->orderByList() as [$field, $direction]) {
+                $column = $schema->columnForField($field);
+                $builder = $builder->addOrderBy(
+                    $column,
+                    $direction === Direction::DESC ? 'DESC' : 'ASC',
+                );
+            }
+            if ($criteria->getLimit() !== null) {
+                $builder = $builder->limit($criteria->getLimit());
+            }
+            if ($criteria->getOffset() !== null) {
+                $builder = $builder->offset($criteria->getOffset());
+            }
+        }
+
+        $query = $builder->build();
+        $rows = $this->adapter->selectAll($query->sql, $query->params);
+
+        $results = [];
+        foreach ($rows as $row) {
+            $results[] = $this->map($row);
+        }
+        return $results;
+    }
+
+    /**
+     * Count entities matching a Criterion or CriteriaBuilder.
+     *
+     * Requires the adapter to implement QuotingInterface.
+     *
+     * @param Criterion|CriteriaBuilder $criteria Search criteria.
+     *
+     * @return int Number of matching rows.
+     *
+     * @throws RdoException If adapter lacks QuotingInterface support.
+     */
+    public function countByCriteria(Criterion|CriteriaBuilder $criteria): int
+    {
+        $this->requireQuotingInterface();
+
+        $schema = $this->getTypeSchema();
+        $visitor = new SqlCriterionVisitor($schema);
+
+        $criterion = $criteria instanceof CriteriaBuilder
+            ? $criteria->criterion()
+            : $criteria;
+
+        $builder = new \Horde\Db\Query\SelectBuilder($this->adapter);
+        $builder = $builder
+            ->columns(new \Horde\Db\Query\Expression('COUNT(*) AS cnt'))
+            ->from($schema->getTable());
+
+        $builder = $visitor->apply($builder, $criterion);
+
+        $query = $builder->build();
+        $row = $this->adapter->selectOne($query->sql, $query->params);
+
+        return (int) ($row['cnt'] ?? 0);
+    }
+
+    /**
+     * Guard: verify that the adapter implements QuotingInterface.
+     *
+     * @throws RdoException If adapter does not implement QuotingInterface.
+     */
+    private function requireQuotingInterface(): void
+    {
+        if (!($this->adapter instanceof QuotingInterface)) {
+            throw new RdoException(
+                'Criterion-based queries require an adapter that implements '
+                . QuotingInterface::class
+                . '. Use the DBAL query builder from Horde\Db.',
+            );
+        }
     }
 }
