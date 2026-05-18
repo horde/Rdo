@@ -23,7 +23,7 @@ $rm = new ResourceMapper($conf['adapter']);
 $r = $rm->findOne(1);
 echo "Resource ({$r->resource_id}) {$r->resource_name} has " . count($r->availabilities) . " availabilities:\n";
 foreach ($r->availabilities as $ra) {
-    echo '  (' . $ra->availability_id . ') ' . $ra->resource->resource_name . " on " . strftime('%x %X', $ra->availability_date) . " (" . $ra->availability_hours . " hours)\n";
+    echo '  (' . $ra->availability_id . ') ' . $ra->resource->resource_name . " on " . date('Y-m-d H:i:s', $ra->availability_date) . " (" . $ra->availability_hours . " hours)\n";
 }
 
 
@@ -31,7 +31,7 @@ foreach ($r->availabilities as $ra) {
 $ram = new ResourceAvailabilityMapper($conf['adapter']);
 
 $ra = $ram->findOne(1);
-echo "Resource Availability ({$ra->availability_id}) " . strftime('%x %X', $ra->availability_date) . " has resource:\n";
+echo "Resource Availability ({$ra->availability_id}) " . date('Y-m-d H:i:s', $ra->availability_date) . " has resource:\n";
 echo "  ({$ra->resource->resource_id}) {$ra->resource->resource_name}\n";
 
 
