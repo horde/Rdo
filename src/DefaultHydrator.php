@@ -14,6 +14,7 @@ namespace Horde\Rdo;
 use DateTimeImmutable;
 use ReflectionClass;
 use ReflectionProperty;
+use DateTimeInterface;
 
 /**
  * Reflection-based hydrator for typed entity classes.
@@ -127,7 +128,7 @@ final class DefaultHydrator implements Hydrator
 
         return match ($field->type) {
             FieldType::BOOL => $value ? 1 : 0,
-            FieldType::DATETIME => $value instanceof \DateTimeInterface
+            FieldType::DATETIME => $value instanceof DateTimeInterface
                 ? $value->format('Y-m-d H:i:s')
                 : $value,
             FieldType::JSON => is_array($value) || is_object($value)

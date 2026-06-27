@@ -442,9 +442,7 @@ class StubAdapter implements Adapter, QuotingInterface
         return $sql;
     }
 
-    public function addLock(&$sql, array $options = [])
-    {
-    }
+    public function addLock(&$sql, array $options = []) {}
 
     // --- Query methods ---
 
@@ -480,28 +478,76 @@ class StubAdapter implements Adapter, QuotingInterface
 
     // --- Unused interface methods (no-ops) ---
 
-    public function adapterName() { return 'stub'; }
-    public function supportsMigrations() { return false; }
-    public function supportsCountDistinct() { return true; }
-    public function prefetchPrimaryKey($tableName = null) { return false; }
+    public function adapterName()
+    {
+        return 'stub';
+    }
+    public function supportsMigrations()
+    {
+        return false;
+    }
+    public function supportsCountDistinct()
+    {
+        return true;
+    }
+    public function prefetchPrimaryKey($tableName = null)
+    {
+        return false;
+    }
     public function connect() {}
-    public function isActive() { return true; }
+    public function isActive()
+    {
+        return true;
+    }
     public function reconnect() {}
     public function disconnect() {}
-    public function rawConnection() { return null; }
-    public function quoteString($string) { return "'" . addslashes($string) . "'"; }
-    public function select($sql, $arg1 = null, $arg2 = null) { return null; }
-    public function selectValue($sql, $arg1 = null, $arg2 = null) { return null; }
-    public function selectValues($sql, $arg1 = null, $arg2 = null) { return []; }
-    public function selectAssoc($sql, $arg1 = null, $arg2 = null) { return []; }
-    public function execute($sql, $arg1 = null, $arg2 = null) { return null; }
-    public function insert($sql, $arg1 = null, $arg2 = null, $pk = null, $idValue = null, $sequenceName = null) { return 1; }
+    public function rawConnection()
+    {
+        return null;
+    }
+    public function quoteString($string)
+    {
+        return "'" . addslashes($string) . "'";
+    }
+    public function select($sql, $arg1 = null, $arg2 = null)
+    {
+        return null;
+    }
+    public function selectValue($sql, $arg1 = null, $arg2 = null)
+    {
+        return null;
+    }
+    public function selectValues($sql, $arg1 = null, $arg2 = null)
+    {
+        return [];
+    }
+    public function selectAssoc($sql, $arg1 = null, $arg2 = null)
+    {
+        return [];
+    }
+    public function execute($sql, $arg1 = null, $arg2 = null)
+    {
+        return null;
+    }
+    public function insert($sql, $arg1 = null, $arg2 = null, $pk = null, $idValue = null, $sequenceName = null)
+    {
+        return 1;
+    }
     public function updateBlob($table, $fields, $where = '') {}
-    public function transactionStarted() { return false; }
+    public function transactionStarted()
+    {
+        return false;
+    }
     public function beginDbTransaction() {}
     public function commitDbTransaction() {}
     public function rollbackDbTransaction() {}
-    public function getLastQuery(): string { return ''; }
+    public function getLastQuery(): string
+    {
+        return '';
+    }
     public function cacheWrite(string $key, string $value) {}
-    public function cacheRead($key) { return false; }
+    public function cacheRead($key)
+    {
+        return false;
+    }
 }

@@ -141,7 +141,7 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
      *
      * @return mixed The current row, or null if no rows.
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function current()
     {
         if (is_null($this->_result)) {
@@ -155,7 +155,7 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
      *
      * @return mixed The current row number (starts at 0), or NULL if no rows
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function key()
     {
         if (is_null($this->_result)) {
@@ -217,7 +217,7 @@ class Horde_Rdo_List implements ArrayAccess, Iterator, Countable
      *
      * @return Horde_Rdo_Base  An entity object at the offset position or null
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         $query = Horde_Rdo_Query::create($this->_query);

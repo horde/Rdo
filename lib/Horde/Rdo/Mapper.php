@@ -23,7 +23,7 @@
  * @category Horde
  * @package  Rdo
  */
-#[\AllowDynamicProperties]
+#[AllowDynamicProperties]
 abstract class Horde_Rdo_Mapper implements Countable
 {
     /**
@@ -317,7 +317,7 @@ abstract class Horde_Rdo_Mapper implements Countable
      *
      * @return integer All objects matching $query.
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function count($query = null)
     {
         $query = Horde_Rdo_Query::create($query, $this);

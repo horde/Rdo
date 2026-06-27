@@ -12,6 +12,7 @@ use Horde\Rdo\Test\Unit\Fixtures\TypedContact;
 use Horde\Rdo\TypeSchema;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use ArrayAccess;
 
 #[CoversClass(DefaultHydrator::class)]
 #[CoversClass(FieldBagHydrator::class)]
@@ -322,7 +323,7 @@ class DynamicEntity
     public string $email = '';
 }
 
-class ArrayAccessEntity implements \ArrayAccess
+class ArrayAccessEntity implements ArrayAccess
 {
     private array $data = [];
 
