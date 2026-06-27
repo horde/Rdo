@@ -23,6 +23,4 @@ namespace Horde\Rdo;
  * @category Horde
  * @package  Rdo
  */
-class MapperSql extends BaseMapper
-{
-}
+class MapperSql extends BaseMapper {}

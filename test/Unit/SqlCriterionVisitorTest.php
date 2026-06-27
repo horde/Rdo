@@ -60,9 +60,7 @@ class SqlCriterionVisitorTest extends TestCase
                 return $sql;
             }
 
-            public function addLock(&$sql, array $options = [])
-            {
-            }
+            public function addLock(&$sql, array $options = []) {}
         };
 
         $this->schema = (new TypeSchema('App\Entity\Contact', 'contacts'))

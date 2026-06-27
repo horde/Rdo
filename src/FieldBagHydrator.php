@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Horde\Rdo;
 
+use ArrayAccess;
+
 /**
  * Hydrator for dynamic field-bag entities.
  *
@@ -33,7 +35,7 @@ final class FieldBagHydrator implements Hydrator
         foreach ($data as $column => $value) {
             $fieldName = $schema->fieldForColumn($column) ?? $column;
 
-            if ($entity instanceof \ArrayAccess) {
+            if ($entity instanceof ArrayAccess) {
                 $entity[$fieldName] = $value;
             } else {
                 $entity->$fieldName = $value;
@@ -51,7 +53,7 @@ final class FieldBagHydrator implements Hydrator
             $propName = $field->name;
             $value = null;
 
-            if ($entity instanceof \ArrayAccess && $entity->offsetExists($propName)) {
+            if ($entity instanceof ArrayAccess && $entity->offsetExists($propName)) {
                 $value = $entity[$propName];
             } elseif (isset($entity->$propName)) {
                 $value = $entity->$propName;
