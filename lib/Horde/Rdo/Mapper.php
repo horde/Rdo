@@ -406,6 +406,10 @@ abstract class Horde_Rdo_Mapper implements Countable
 
             if (!$id) {
                 // Object doesn't exist yet; create it instead.
+                // Omit the empty primary key. PostgreSQL serial columns
+                // reject an explicit NULL; nextval() runs only when the
+                // column is absent from the INSERT.
+                unset($fields[$key]);
                 $o = $this->create($fields);
                 $this->mapFields($object, iterator_to_array($o));
                 return 1;

@@ -278,6 +278,39 @@ class BaseMapperTest extends TestCase
 
         $this->assertSame(3, $mapper->countByCriteria($criteria));
     }
+
+    public function testUpdateOfNewObjectOmitsEmptyPrimaryKey(): void
+    {
+        $adapter = new MapperStubAdapter();
+        $mapper = new TestNoTimestampMapper($adapter);
+        $entity = new TestContact(['title' => 'Hello']);
+        $entity->setMapper($mapper);
+
+        $this->assertSame(1, $mapper->update($entity));
+
+        $insert = $adapter->lastCall('insert');
+        $this->assertNotNull($insert);
+        $this->assertSame('INSERT INTO "items" ("title") VALUES (?)', $insert['sql']);
+        $this->assertSame(['Hello'], $insert['params']);
+        $this->assertSame(1, $entity->item_id);
+        $this->assertNull($adapter->lastCall('update'));
+    }
+
+    public function testUpdateOfExistingObjectKeepsPrimaryKey(): void
+    {
+        $adapter = new MapperStubAdapter();
+        $mapper = new TestNoTimestampMapper($adapter);
+        $entity = new TestContact(['item_id' => 5, 'title' => 'Hello']);
+        $entity->setMapper($mapper);
+
+        $this->assertSame(1, $mapper->update($entity));
+
+        $this->assertNull($adapter->lastCall('insert'));
+        $update = $adapter->lastCall('update');
+        $this->assertNotNull($update);
+        $this->assertStringContainsString('WHERE item_id = ?', $update['sql']);
+        $this->assertContains(5, $update['params']);
+    }
 }
 
 // --- Test entity ---
@@ -548,6 +581,7 @@ class MapperStubAdapter implements Adapter, QuotingInterface
     }
     public function insert($sql, $arg1 = null, $arg2 = null, $pk = null, $idValue = null, $sequenceName = null)
     {
+        $this->calls[] = ['method' => 'insert', 'sql' => $sql, 'params' => $arg1 ?? []];
         return 1;
     }
     public function updateBlob($table, $fields, $where = '') {}
