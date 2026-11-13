@@ -130,7 +130,7 @@ abstract class Base implements Entity, IteratorAggregate, ArrayAccess
         // objects and fill the cache.
         switch ($rel['type']) {
             case Constants::ONE_TO_ONE:
-            case Constances::MANY_TO_ONE:
+            case Constants::MANY_TO_ONE:
                 if (isset($rel['query'])) {
                     $query = $this->_fillPlaceholders($rel['query']);
                     $this->_fields[$field] = $m->findOne($query);
